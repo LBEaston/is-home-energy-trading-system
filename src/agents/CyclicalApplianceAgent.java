@@ -6,11 +6,11 @@ import jade.core.behaviours.TickerBehaviour;
  * Created by fegwin on 7/09/2016.
  */
 public class CyclicalApplianceAgent extends AbstractAgent implements ApplianceAgent {
-    private int ticksToDate = 0;
+    private int currentlyConsuming = 0;
 
     @Override
     public int currentlyConsuming() {
-        return 0;
+        return currentlyConsuming;
     }
 
     @Override
@@ -25,8 +25,8 @@ public class CyclicalApplianceAgent extends AbstractAgent implements ApplianceAg
         this.addBehaviour(new TickerBehaviour(this, 4000) {
             @Override
             protected void onTick() {
-                ticksToDate++;
-                fireStatusChangedEvent("Done " + ticksToDate + " ticks now");
+                currentlyConsuming++;
+                fireStatusChangedEvent("Now consuming " + currentlyConsuming + " ticks now");
             }
         });
     }

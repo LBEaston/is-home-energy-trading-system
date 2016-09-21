@@ -1,7 +1,6 @@
 package agents;
 
 import jade.core.AID;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
@@ -9,7 +8,6 @@ import jade.proto.ContractNetInitiator;
 
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -18,6 +16,8 @@ import java.util.Vector;
 public class HomeAgent extends AbstractAgent {
     private Vector<String> retailers;
     private boolean inTheMiddleOfANegotiation = false;
+
+    private int currentConsumptionRequirement = 0;
 
     public HomeAgent() {
         retailers = new Vector();
@@ -47,20 +47,17 @@ public class HomeAgent extends AbstractAgent {
     private void configureBehaviours() throws InterruptedException {
         // Add a cyclical behaviour to do the comms routine, which keeps adding
         // the contract net init behaviour
-
-        Thread.sleep(20000); //todo remove this
-
         TickerBehaviour tickerBehaviour = new TickerBehaviour(this, 2000) {
             @Override
             protected void onTick() {
-                doCfp();
+                negotiateWithRetailers();
             }
         };
 
         addBehaviour(tickerBehaviour);
     }
 
-    private void doCfp() {
+    private void negotiateWithRetailers() {
         if(inTheMiddleOfANegotiation) return;
         inTheMiddleOfANegotiation = true;
 

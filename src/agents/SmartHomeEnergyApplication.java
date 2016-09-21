@@ -9,16 +9,19 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
+import java.util.concurrent.Exchanger;
 
 /**
  * Created by fegwin on 7/09/2016.
  */
 public class SmartHomeEnergyApplication implements Runnable, AgentStatusChangeEvent {
-    private Vector<AgentController> agents;
+    private JPanel rootPanel;
+
+    private Vector<AgentController> allAgents;
     private Map<String, JComponent> agentStatusContainers;
 
-    public SmartHomeEnergyApplication(Vector<AgentController> agents) {
-        this.agents = agents;
+    public SmartHomeEnergyApplication(Vector<AgentController> allAgents) {
+        this.allAgents = allAgents;
         agentStatusContainers = new HashMap();
     }
 
@@ -26,43 +29,49 @@ public class SmartHomeEnergyApplication implements Runnable, AgentStatusChangeEv
     public void run() {
         JFrame rootContainer = new JFrame("Smart Home Energy");
 
-        rootContainer.setSize(new Dimension(100, 300));
+        rootPanel = new JPanel();
+        rootPanel.setLayout(new BoxLayout(rootPanel, BoxLayout.PAGE_AXIS));
+
+        rootContainer.setPreferredSize(new Dimension(500, 300));
         rootContainer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         try {
             createLayout(rootContainer);
         } catch (StaleProxyException e) {
             e.printStackTrace();
+        } catch (UnableToGetAgentInterfaceException e) {
+            e.printStackTrace();
         }
+
+        rootContainer.add(rootPanel);
 
         rootContainer.pack();
         rootContainer.setVisible(true);
     }
 
-    private void createLayout(JFrame rootContainer) throws StaleProxyException {
-        // Root layout
-        rootContainer.setLayout(new FlowLayout(FlowLayout.CENTER));
+    private void createLayout(JFrame rootContainer) throws StaleProxyException, UnableToGetAgentInterfaceException {
+        Vector<JComponent> allComponents = new Vector<>();
 
-        Vector<JComponent> items = new Vector<>();
-
-        for(AgentController agent : agents) {
-            items.add(createAgentStatusContainerWithSubscription(agent));
+        for(AgentController agent : allAgents) {
+            allComponents.add(createAgentStatusContainerWithSubscription(agent));
         }
 
-        items.forEach(rootContainer::add);
+        allComponents.forEach(rootPanel::add);
     }
 
-    private JComponent createAgentStatusContainerWithSubscription(AgentController agentController) throws StaleProxyException {
+    private JComponent createAgentStatusContainerWithSubscription(AgentController agentController) throws StaleProxyException, UnableToGetAgentInterfaceException {
         String agentId = agentController.getName();
-
-        // Create Status Container
-        JComponent agentStatusContainer = new JLabel(agentId);
-        agentStatusContainer.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 
         // Get agent o2a interface and register event
         Observable oa = agentController.getO2AInterface(Observable.class);
 
-        if(oa != null) oa.addStatusEventListener(this);
+        if(oa == null) throw new UnableToGetAgentInterfaceException();
+
+        oa.addStatusEventListener(this);
+
+        // Create Status Container
+        JComponent agentStatusContainer = new JLabel(getAgentSimpleName(agentId));
+        agentStatusContainer.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 
         agentStatusContainers.put(agentId, agentStatusContainer);
 
@@ -87,6 +96,10 @@ public class SmartHomeEnergyApplication implements Runnable, AgentStatusChangeEv
         // Get the component
         JLabel statusContainer = (JLabel) agentStatusContainers.get(agentIdentifier);
 
-        statusContainer.setText(agentIdentifier + "|" + currentStatus);
+        statusContainer.setText("<html><b>" + getAgentSimpleName(agentIdentifier) + "</b><br/>" + currentStatus + "</html>");
+    }
+
+    private String getAgentSimpleName(String agentIdentifier) {
+        return agentIdentifier.split("@")[0];
     }
 }

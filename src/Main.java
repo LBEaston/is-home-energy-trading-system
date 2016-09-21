@@ -20,6 +20,11 @@ public class Main {
         pMain.setParameter(Profile.GUI, "true");
         ContainerController mainContainer = jadeRuntime.createMainContainer(pMain);
 
+        // Create a Sniffer
+        AgentController sniffer = mainContainer.createNewAgent("mySniffer", "jade.tools.sniffer.Sniffer",
+                new Object[]{"AGL;CityPower;HomeBrand;HomeAgent;SolarPanel;TV1;TV2;WashingMachine;Fridge"});
+        sniffer.start();
+
         //2. Some agent container stuff
         Profile p = new ProfileImpl(false);
         AgentContainer agentContainer = jadeRuntime.createAgentContainer(p);
