@@ -37,12 +37,13 @@ public class Main {
         agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new String[] {}));
         agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new String[] {}));
 
-        agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new String[] {}));
-        agents.add(agentContainer.createNewAgent("SolarPanel", CyclicalApplianceAgent.class.getName(), new String[] {}));
-        agents.add(agentContainer.createNewAgent("TV1", CyclicalApplianceAgent.class.getName(), new String[] {}));
-        agents.add(agentContainer.createNewAgent("TV2", CyclicalApplianceAgent.class.getName(), new String[] {}));
-        agents.add(agentContainer.createNewAgent("WashingMachine", CyclicalVariableConsumptionApplianceAgent.class.getName(), new String[] {}));
-        agents.add(agentContainer.createNewAgent("Fridge", AlwaysOnApplianceAgent.class.getName(), new String[] {}));
+        agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new String[] {"HomeBrand", "AGL", "CityPower"}));
+
+        agents.add(agentContainer.createNewAgent("SolarPanel", CyclicalApplianceAgent.class.getName(), new String[] {"HomeAgent"}));
+        agents.add(agentContainer.createNewAgent("TV1", CyclicalApplianceAgent.class.getName(), new String[] {"HomeAgent"}));
+        agents.add(agentContainer.createNewAgent("TV2", CyclicalApplianceAgent.class.getName(), new String[] {"HomeAgent"}));
+        agents.add(agentContainer.createNewAgent("WashingMachine", CyclicalVariableConsumptionApplianceAgent.class.getName(), new String[] {"HomeAgent"}));
+        agents.add(agentContainer.createNewAgent("Fridge", AlwaysOnApplianceAgent.class.getName(), new String[] {"HomeAgent"}));
 
         // Starting our agents
         for(AgentController agent : agents) {
@@ -51,7 +52,6 @@ public class Main {
 
         //2. Fire up our user interface
         SmartHomeEnergyApplication smartHomeEnergyApplicationUi = new SmartHomeEnergyApplication(agents);
-
         SwingUtilities.invokeLater(smartHomeEnergyApplicationUi);
     }
 }
