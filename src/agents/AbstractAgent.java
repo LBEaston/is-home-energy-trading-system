@@ -1,6 +1,9 @@
 package agents;
 
+import agents.interfaces.Destroyable;
+import agents.interfaces.Observable;
 import jade.core.Agent;
+import ui.interfaces.Informable;
 
 import java.util.Vector;
 
@@ -8,9 +11,9 @@ import java.util.Vector;
  * Created by fegwin on 15/09/2016.
  */
 public abstract class AbstractAgent extends Agent implements Observable, Destroyable {
-    private Vector<AgentStatusChangeEvent> statusEventListeners;
+    private Vector<Informable> statusEventListeners;
 
-    public void addStatusEventListener(AgentStatusChangeEvent listener) {
+    public void addStatusEventListener(Informable listener) {
         if(statusEventListeners == null) {
             statusEventListeners = new Vector();
         }
@@ -18,11 +21,11 @@ public abstract class AbstractAgent extends Agent implements Observable, Destroy
         statusEventListeners.add(listener);
     }
 
-    public void fireStatusChangedEvent(String newStatus) {
+    public void fireStatusChangedEvent(Object newStatus) {
         if(statusEventListeners == null || statusEventListeners.isEmpty()) return;
 
-        for(AgentStatusChangeEvent listener : statusEventListeners) {
-            listener.inform(this.getName(), newStatus);
+        for(Informable listener : statusEventListeners) {
+            listener.inform(newStatus);
         }
     }
 
@@ -40,6 +43,11 @@ public abstract class AbstractAgent extends Agent implements Observable, Destroy
     @Override
     protected void setup() {
         super.setup();
+
+        configureBehaviours();
+
         System.out.println(this.getLocalName() + " (" + this.getClass().getName() + ") - STARTING");
     }
+
+    protected abstract void configureBehaviours();
 }

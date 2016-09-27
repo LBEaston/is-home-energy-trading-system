@@ -1,4 +1,4 @@
-package agents;
+package agents.interfaces;
 
 /**
  * Created by fegwin on 15/09/2016.

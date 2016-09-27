@@ -6,10 +6,7 @@ import jade.domain.FIPAAgentManagement.RefuseException;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.proto.AchieveREResponder;
 import jade.proto.ContractNetResponder;
-
-import java.util.Vector;
 
 /**
  * Created by fegwin on 7/09/2016.
@@ -22,7 +19,7 @@ public class RetailerAgent extends AbstractAgent {
         configureBehaviours();
     }
 
-    private void configureBehaviours() {
+    public void configureBehaviours() {
         MessageTemplate template = MessageTemplate.and(
                 MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET),
                 MessageTemplate.MatchPerformative(ACLMessage.CFP) );
@@ -67,5 +64,10 @@ public class RetailerAgent extends AbstractAgent {
     private int testMethodRemoveMe() {
 
         return 10;
+    }
+
+    @Override
+    public EnergyAgentType getAgentType() {
+        return EnergyAgentType.RetailerAgent;
     }
 }

@@ -44,7 +44,7 @@ public class HomeAgent extends AbstractAgent {
         }
     }
 
-    private void configureBehaviours() throws InterruptedException {
+    public void configureBehaviours() {
         // Add a cyclical behaviour to do the comms routine, which keeps adding
         // the contract net init behaviour
         TickerBehaviour tickerBehaviour = new TickerBehaviour(this, 2000) {
@@ -107,5 +107,10 @@ public class HomeAgent extends AbstractAgent {
                 fireStatusChangedEvent("Agent " + inform.getSender().getLocalName() + " is informing");
             }
         });
+    }
+
+    @Override
+    public EnergyAgentType getAgentType() {
+        return EnergyAgentType.HomeAgent;
     }
 }

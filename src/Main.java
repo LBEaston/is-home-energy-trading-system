@@ -4,6 +4,7 @@ import jade.core.Profile;
 import jade.core.ProfileImpl;
 
 import jade.wrapper.*;
+import ui.SmartHomeEnergyApplication;
 
 import javax.swing.*;
 import java.util.Vector;
@@ -20,16 +21,16 @@ public class Main {
         pMain.setParameter(Profile.GUI, "true");
         ContainerController mainContainer = jadeRuntime.createMainContainer(pMain);
 
-        // Create a Sniffer
+        //2. Create a Sniffer
         AgentController sniffer = mainContainer.createNewAgent("mySniffer", "jade.tools.sniffer.Sniffer",
                 new Object[]{"AGL;CityPower;HomeBrand;HomeAgent;SolarPanel;TV1;TV2;WashingMachine;Fridge"});
         sniffer.start();
 
-        //2. Some agent container stuff
+        //3. Some agent container stuff
         Profile p = new ProfileImpl(false);
         AgentContainer agentContainer = jadeRuntime.createAgentContainer(p);
 
-        //3. Startup all the agents
+        //4. Startup all the agents
             // 3 retailers
             // 1 homeagent
                 // 1 solar panel
@@ -44,18 +45,18 @@ public class Main {
 
         agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new String[] {"HomeBrand", "AGL", "CityPower"}));
 
-        agents.add(agentContainer.createNewAgent("SolarPanel", CyclicalApplianceAgent.class.getName(), new String[] {"HomeAgent"}));
-        agents.add(agentContainer.createNewAgent("TV1", CyclicalApplianceAgent.class.getName(), new String[] {"HomeAgent"}));
-        agents.add(agentContainer.createNewAgent("TV2", CyclicalApplianceAgent.class.getName(), new String[] {"HomeAgent"}));
-        agents.add(agentContainer.createNewAgent("WashingMachine", CyclicalVariableConsumptionApplianceAgent.class.getName(), new String[] {"HomeAgent"}));
-        agents.add(agentContainer.createNewAgent("Fridge", AlwaysOnApplianceAgent.class.getName(), new String[] {"HomeAgent"}));
+        agents.add(agentContainer.createNewAgent("SolarPanel", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent"}));
+        agents.add(agentContainer.createNewAgent("TV1", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent"}));
+        agents.add(agentContainer.createNewAgent("TV2", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent"}));
+        agents.add(agentContainer.createNewAgent("WashingMachine", CyclicalVariableConsumptionApplianceAgent.class.getName(), new Object[] {"HomeAgent"}));
+        agents.add(agentContainer.createNewAgent("Fridge", AlwaysOnApplianceAgent.class.getName(), new Object[] {"HomeAgent", 1411}));
 
         // Starting our agents
         for(AgentController agent : agents) {
             agent.start();
         }
 
-        //2. Fire up our user interface
+        //5. Fire up our user interface
         SmartHomeEnergyApplication smartHomeEnergyApplicationUi = new SmartHomeEnergyApplication(agents);
         SwingUtilities.invokeLater(smartHomeEnergyApplicationUi);
     }

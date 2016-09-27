@@ -1,4 +1,4 @@
-package agents;
+package ui;
 
 /**
  * Created by fegwin on 21/09/2016.
