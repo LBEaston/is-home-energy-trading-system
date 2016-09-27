@@ -13,6 +13,9 @@ import java.util.*;
  */
 public class SmartHomeEnergyApplication implements Runnable {
     private JPanel rootPanel;
+    private JPanel retailerPanel;
+    private JPanel appliancePanel;
+    private JComponent homeAgnet;
 
     private Vector<AgentController> allAgents;
 
@@ -24,19 +27,29 @@ public class SmartHomeEnergyApplication implements Runnable {
     public void run() {
         JFrame rootContainer = new JFrame("Smart Home Energy");
 
-        rootPanel = new JPanel();
-        rootPanel.setLayout(new BoxLayout(rootPanel, BoxLayout.PAGE_AXIS));
-
-        rootContainer.setPreferredSize(new Dimension(500, 300));
+        rootContainer.setPreferredSize(new Dimension(500, 450));
         rootContainer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        rootPanel = new JPanel();
+        rootPanel.setLayout(new GridLayout(3, 1));
+
+        retailerPanel = new JPanel();
+        retailerPanel.setLayout(new GridLayout(1, 3));
+
+        appliancePanel = new JPanel();
+        appliancePanel.setLayout(new GridLayout(3, 3));
+
         try {
-            createLayout(rootContainer);
+            populateWithAgents();
         } catch (StaleProxyException e) {
             e.printStackTrace();
         } catch (UnableToGetAgentInterfaceException e) {
             e.printStackTrace();
         }
+
+        rootPanel.add(retailerPanel);
+        rootPanel.add(homeAgnet);
+        rootPanel.add(appliancePanel);
 
         rootContainer.getContentPane().add(rootPanel);
 
@@ -44,17 +57,14 @@ public class SmartHomeEnergyApplication implements Runnable {
         rootContainer.setVisible(true);
     }
 
-    private void createLayout(JFrame rootContainer) throws StaleProxyException, UnableToGetAgentInterfaceException {
-        Vector<JComponent> allComponents = new Vector<>();
+    private void populateWithAgents() throws StaleProxyException, UnableToGetAgentInterfaceException {
 
         for(AgentController agent : allAgents) {
-            allComponents.add(createAgentStatusContainerWithSubscription(agent));
+            createAgentStatusContainerWithSubscription(agent);
         }
-
-        allComponents.forEach(rootPanel::add);
     }
 
-    private JComponent createAgentStatusContainerWithSubscription(AgentController agentController) throws StaleProxyException, UnableToGetAgentInterfaceException {
+    private void createAgentStatusContainerWithSubscription(AgentController agentController) throws StaleProxyException, UnableToGetAgentInterfaceException {
         // Get agent o2a interface and register event
         agents.interfaces.Observable oa = agentController.getO2AInterface(Observable.class);
 
@@ -67,17 +77,18 @@ public class SmartHomeEnergyApplication implements Runnable {
         {
             case RetailerAgent:
                 agentUiElement = new RetailAgentUiElement(agentController);
+                retailerPanel.add(agentUiElement);
                 break;
             case HomeAgent:
                 agentUiElement = new HomeAgentUiElement(agentController);
+                homeAgnet = agentUiElement;
                 break;
             case ApplianceAgent:
                 agentUiElement = new ApplianceAgentUiElement(agentController);
+                appliancePanel.add(agentUiElement);
                 break;
         }
 
         oa.addStatusEventListener(agentUiElement);
-
-        return agentUiElement;
     }
 }

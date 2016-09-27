@@ -45,7 +45,8 @@ public class Main {
 
         agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new String[] {"HomeBrand", "AGL", "CityPower"}));
 
-        agents.add(agentContainer.createNewAgent("SolarPanel", CyclicalVariableConsumptionApplianceAgent.class.getName(), new Object[] {"HomeAgent", -234, -453, -145}));
+        agents.add(agentContainer.createNewAgent("SolarPanel1", CyclicalVariableConsumptionApplianceAgent.class.getName(), new Object[] {"HomeAgent", -234, -453, -145}));
+        agents.add(agentContainer.createNewAgent("SolarPanel2", CyclicalVariableConsumptionApplianceAgent.class.getName(), new Object[] {"HomeAgent", -200, -783, -35}));
         agents.add(agentContainer.createNewAgent("TV1", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent", 45}));
         agents.add(agentContainer.createNewAgent("TV2", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent", 78}));
         agents.add(agentContainer.createNewAgent("WashingMachine", CyclicalVariableConsumptionApplianceAgent.class.getName(), new Object[] {"HomeAgent", 98, 53, 168}));
