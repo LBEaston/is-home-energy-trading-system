@@ -33,15 +33,6 @@ public class HomeAgent extends AbstractAgent {
             String retailer = (String)arg;
             retailers.add(retailer);
         }
-
-        // Configure behaviours
-        try
-        {
-            configureBehaviours();
-        }
-        catch(Exception e) {
-            int i = 0;
-        }
     }
 
     public void configureBehaviours() {

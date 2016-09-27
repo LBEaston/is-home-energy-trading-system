@@ -45,11 +45,11 @@ public class Main {
 
         agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new String[] {"HomeBrand", "AGL", "CityPower"}));
 
-        agents.add(agentContainer.createNewAgent("SolarPanel", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent"}));
-        agents.add(agentContainer.createNewAgent("TV1", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent"}));
-        agents.add(agentContainer.createNewAgent("TV2", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent"}));
-        agents.add(agentContainer.createNewAgent("WashingMachine", CyclicalVariableConsumptionApplianceAgent.class.getName(), new Object[] {"HomeAgent"}));
-        agents.add(agentContainer.createNewAgent("Fridge", AlwaysOnApplianceAgent.class.getName(), new Object[] {"HomeAgent", 1411}));
+        agents.add(agentContainer.createNewAgent("SolarPanel", CyclicalVariableConsumptionApplianceAgent.class.getName(), new Object[] {"HomeAgent", -234, -453, -145}));
+        agents.add(agentContainer.createNewAgent("TV1", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent", 45}));
+        agents.add(agentContainer.createNewAgent("TV2", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent", 78}));
+        agents.add(agentContainer.createNewAgent("WashingMachine", CyclicalVariableConsumptionApplianceAgent.class.getName(), new Object[] {"HomeAgent", 98, 53, 168}));
+        agents.add(agentContainer.createNewAgent("Fridge", SimpleApplianceAgent.class.getName(), new Object[] {"HomeAgent", 1411}));
 
         // Starting our agents
         for(AgentController agent : agents) {

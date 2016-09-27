@@ -12,13 +12,6 @@ import jade.proto.ContractNetResponder;
  * Created by fegwin on 7/09/2016.
  */
 public class RetailerAgent extends AbstractAgent {
-    protected void setup() {
-        super.setup();
-
-        // Configure behaviours
-        configureBehaviours();
-    }
-
     public void configureBehaviours() {
         MessageTemplate template = MessageTemplate.and(
                 MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET),

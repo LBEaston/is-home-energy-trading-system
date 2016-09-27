@@ -6,40 +6,28 @@ import jade.core.behaviours.TickerBehaviour;
 /**
  * Created by fegwin on 7/09/2016.
  */
-public class CyclicalApplianceAgent extends AbstractAgent implements ApplianceAgent {
-    private boolean currentlyOn = false;
+public class CyclicalApplianceAgent extends SimpleApplianceAgent implements ApplianceAgent {
+    protected boolean currentlyOn = false;
 
     @Override
     public int currentlyConsuming() {
-        return currentlyOn ? 10 : 0;
+        return currentlyOn ? consumptionValue : 0;
     }
 
     @Override
     public boolean isActive() {
-        return false;
-    }
-
-    @Override
-    protected void setup() {
-        super.setup();
-
-        this.addBehaviour(new TickerBehaviour(this, 10000) {
-            @Override
-            protected void onTick() {
-                currentlyOn = !currentlyOn;
-
-                fireStatusChangedEvent(currentlyConsuming());
-            }
-        });
+        return currentlyOn;
     }
 
     @Override
     protected void configureBehaviours() {
+        addBehaviour(new TickerBehaviour(this, 10000) {
+            @Override
+            protected void onTick() {
+                currentlyOn = !currentlyOn;
 
-    }
-
-    @Override
-    public EnergyAgentType getAgentType() {
-        return EnergyAgentType.ApplianceAgent;
+                addBehaviour(getInformBehaviour());
+            }
+        });
     }
 }

@@ -1,18 +1,21 @@
 package agents;
 
 import agents.interfaces.ApplianceAgent;
+import com.sun.org.glassfish.gmbal.ManagedObject;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
+import ui.interfaces.Informable;
 
 import java.security.InvalidParameterException;
+import java.util.Vector;
 
 /**
  * Created by fegwin on 7/09/2016.
  */
-public class AlwaysOnApplianceAgent extends AbstractAgent implements ApplianceAgent {
-    private int consumptionValue = 0;
-    private String homeAgentName = null;
+public class SimpleApplianceAgent extends AbstractAgent implements ApplianceAgent {
+    protected int consumptionValue = 0;
+    protected String homeAgentName = null;
 
     @Override
     public int currentlyConsuming() {
@@ -21,7 +24,7 @@ public class AlwaysOnApplianceAgent extends AbstractAgent implements ApplianceAg
 
     @Override
     public boolean isActive() {
-        return false;
+        return consumptionValue != 0;
     }
 
     @Override
@@ -30,7 +33,7 @@ public class AlwaysOnApplianceAgent extends AbstractAgent implements ApplianceAg
 
         Object[] args = getArguments();
 
-        if(args.length != 2) throw new InvalidParameterException("Have not provided starting consumption value");
+        if(args.length < 2) throw new InvalidParameterException("Have not provided starting consumption value");
 
         //Always on agent requires a consumption value
         String homeAgentName = (String)args[0];
@@ -42,23 +45,36 @@ public class AlwaysOnApplianceAgent extends AbstractAgent implements ApplianceAg
 
     @Override
     protected void configureBehaviours() {
-        addBehaviour(new OneShotBehaviour() {
+        addBehaviour(getInformBehaviour());
+    }
+
+    protected OneShotBehaviour getInformBehaviour() {
+        return new OneShotBehaviour() {
             @Override
             public void action() {
                 informCurrentlyConsuming();
             }
-        });
+        };
     }
 
-    private void informCurrentlyConsuming() {
+    protected void informCurrentlyConsuming() {
         ACLMessage informMessage = new ACLMessage(ACLMessage.INFORM);
 
         informMessage.setSender(new AID(homeAgentName, AID.ISLOCALNAME));
         informMessage.setContent("consuming=" + currentlyConsuming());
         informMessage.setOntology("homeenergy");
+        informMessage.setLanguage("english");
 
         send(informMessage);
         fireStatusChangedEvent(currentlyConsuming());
+    }
+
+    @Override
+    public void addStatusEventListener(Informable listener) {
+        super.addStatusEventListener(listener);
+
+        // New listener added, do an inform
+        addBehaviour(getInformBehaviour());
     }
 
     @Override

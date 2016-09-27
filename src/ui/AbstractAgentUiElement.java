@@ -16,7 +16,7 @@ public abstract class AbstractAgentUiElement extends JPanel implements Informabl
 
     AbstractAgentUiElement(AgentController agentController) throws StaleProxyException {
         super();
-        this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         this.agentController = agentController;
         createLayout();
