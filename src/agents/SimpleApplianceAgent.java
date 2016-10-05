@@ -60,10 +60,13 @@ public class SimpleApplianceAgent extends AbstractAgent implements ApplianceAgen
     protected void informCurrentlyConsuming() {
         ACLMessage informMessage = new ACLMessage(ACLMessage.INFORM);
 
-        informMessage.setSender(new AID(homeAgentName, AID.ISLOCALNAME));
+        //informMessage.setSender(new AID(homeAgentName, AID.ISLOCALNAME));
+        informMessage.addReceiver(new AID(homeAgentName, AID.ISLOCALNAME));
         informMessage.setContent("consuming=" + currentlyConsuming());
         informMessage.setOntology("homeenergy");
         informMessage.setLanguage("english");
+        
+        
 
         send(informMessage);
         fireStatusChangedEvent(currentlyConsuming());
