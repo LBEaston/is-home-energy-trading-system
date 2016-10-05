@@ -21,7 +21,12 @@ public class RetailerAgent extends AbstractAgent {
             @Override
             protected ACLMessage handleCfp(ACLMessage cfp) throws NotUnderstoodException, RefuseException {
                 boolean shouldIPropose = testMethodRemoveMe() > 2;
-
+                
+                /*
+                 * NOTE(Lachlan 5-10-16) proposed message format for contract proposals
+                 * "{id=<INT>,sellingAt=<FLOAT>,buyingAt=<FLOAT>,duration=<FLOAT>}{...}{...}"
+                 * 
+                 */
                 if(shouldIPropose) {
                     ACLMessage propose = cfp.createReply();
                     propose.setPerformative(ACLMessage.PROPOSE);

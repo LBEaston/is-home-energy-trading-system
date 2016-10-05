@@ -33,7 +33,7 @@ public class Main {
         //4. Startup all the agents
             // 3 retailers
             // 1 homeagent
-                // 1 solar panel
+                // 2 solar panel
                 // 2 televisions
                 // 1 washing machine
                 // 1 fridge
