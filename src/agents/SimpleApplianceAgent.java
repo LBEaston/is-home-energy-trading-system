@@ -1,14 +1,12 @@
 package agents;
 
 import agents.interfaces.ApplianceAgent;
-import com.sun.org.glassfish.gmbal.ManagedObject;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import ui.interfaces.Informable;
 
 import java.security.InvalidParameterException;
-import java.util.Vector;
 
 /**
  * Created by fegwin on 7/09/2016.
@@ -45,7 +43,17 @@ public class SimpleApplianceAgent extends AbstractAgent implements ApplianceAgen
 
     @Override
     protected void configureBehaviours() {
+        addBehaviour(getSayHelloBehaviour());
         addBehaviour(getInformBehaviour());
+    }
+
+    protected OneShotBehaviour getSayHelloBehaviour() {
+        return new OneShotBehaviour() {
+            @Override
+            public void action() {
+                sayHelloToHomeAgent();
+            }
+        };
     }
 
     protected OneShotBehaviour getInformBehaviour() {
@@ -60,16 +68,26 @@ public class SimpleApplianceAgent extends AbstractAgent implements ApplianceAgen
     protected void informCurrentlyConsuming() {
         ACLMessage informMessage = new ACLMessage(ACLMessage.INFORM);
 
-        //informMessage.setSender(new AID(homeAgentName, AID.ISLOCALNAME));
+        informMessage.setSender(new AID(this.getLocalName(), AID.ISLOCALNAME));
         informMessage.addReceiver(new AID(homeAgentName, AID.ISLOCALNAME));
         informMessage.setContent("consuming=" + currentlyConsuming());
         informMessage.setOntology("homeenergy");
         informMessage.setLanguage("english");
-        
-        
 
         send(informMessage);
         fireStatusChangedEvent(currentlyConsuming());
+    }
+
+    private void sayHelloToHomeAgent() {
+        ACLMessage informMessage = new ACLMessage(ACLMessage.INFORM);
+
+        informMessage.setSender(new AID(this.getLocalName(), AID.ISLOCALNAME));
+        informMessage.addReceiver(new AID(homeAgentName, AID.ISLOCALNAME));
+        informMessage.setContent("hello" + currentlyConsuming());
+        informMessage.setOntology("homeenergy");
+        informMessage.setLanguage("english");
+
+        send(informMessage);
     }
 
     @Override

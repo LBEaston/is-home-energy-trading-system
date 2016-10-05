@@ -39,9 +39,16 @@ public class Main {
                 // 1 fridge
         Vector<AgentController> agents = new Vector<>();
 
-        agents.add(agentContainer.createNewAgent("AGL", RetailerAgent.class.getName(), new String[] {}));
-        agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new String[] {}));
-        agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new String[] {}));
+        /*
+                isOffPeak = (boolean)args[0];
+                offPeakTickCount = (int)args[1];
+                peakTickCount = (int)args[2];
+                peakPrice = (int)args[3];
+                offPeakPrice = (int)args[4];
+         */
+        agents.add(agentContainer.createNewAgent("AGL", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434}));
+        agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434}));
+        agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434}));
 
         agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new String[] {"HomeBrand", "AGL", "CityPower"}));
 
