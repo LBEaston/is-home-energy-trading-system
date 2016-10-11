@@ -43,18 +43,18 @@ public class SimpleApplianceAgent extends AbstractAgent implements ApplianceAgen
 
     @Override
     protected void configureBehaviours() {
-        addBehaviour(getSayHelloBehaviour());
+        //addBehaviour(getSayHelloBehaviour());
         addBehaviour(getInformBehaviour());
     }
 
-    protected OneShotBehaviour getSayHelloBehaviour() {
-        return new OneShotBehaviour() {
-            @Override
-            public void action() {
-                sayHelloToHomeAgent();
-            }
-        };
-    }
+//    protected OneShotBehaviour getSayHelloBehaviour() {
+//        return new OneShotBehaviour() {
+//            @Override
+//            public void action() {
+//                sayHelloToHomeAgent();
+//            }
+//        };
+//    }
 
     protected OneShotBehaviour getInformBehaviour() {
         return new OneShotBehaviour() {
@@ -78,17 +78,17 @@ public class SimpleApplianceAgent extends AbstractAgent implements ApplianceAgen
         fireStatusChangedEvent(currentlyConsuming());
     }
 
-    private void sayHelloToHomeAgent() {
-        ACLMessage informMessage = new ACLMessage(ACLMessage.INFORM);
-
-        informMessage.setSender(new AID(this.getLocalName(), AID.ISLOCALNAME));
-        informMessage.addReceiver(new AID(homeAgentName, AID.ISLOCALNAME));
-        informMessage.setContent("hello" + currentlyConsuming());
-        informMessage.setOntology("homeenergy");
-        informMessage.setLanguage("english");
-
-        send(informMessage);
-    }
+//    private void sayHelloToHomeAgent() {
+//        ACLMessage informMessage = new ACLMessage(ACLMessage.INFORM);
+//
+//        informMessage.setSender(new AID(this.getLocalName(), AID.ISLOCALNAME));
+//        informMessage.addReceiver(new AID(homeAgentName, AID.ISLOCALNAME));
+//        informMessage.setContent("hello");
+//        informMessage.setOntology("homeenergy");
+//        informMessage.setLanguage("english");
+//
+//        send(informMessage);
+//    }
 
     @Override
     public void addStatusEventListener(Informable listener) {

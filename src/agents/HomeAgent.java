@@ -2,6 +2,7 @@ package agents;
 
 import jade.core.AID;
 
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
@@ -17,10 +18,25 @@ import java.util.*
  */
 public class HomeAgent extends AbstractAgent {
     private Vector<String> retailers;
+    private HashMap<String, ApplianceConsumptionHistory> applianceConsumptionHistory;
+    private HashMap<String, ApplianceConsumption> currentApplianceConsumption;
+
+    /* NOTE(Lachlan 28-9-16) History of power produced/used **Lachie, this stuff can be calculated from the above arrays. I'll do it tomorrow**  */
+    private ArrayList<Float> _kwhProducedInPast = new ArrayList<Float>();
+    private ArrayList<Float> _kwhUsedInPast = new ArrayList<Float>();
+    private ArrayList<Float> _kwhNet = new ArrayList<Float>(); /* NOTE(Lachlan 28-9-16) Same as (Used - Produced) Possibly too redundant? */
+
     private boolean inTheMiddleOfANegotiation = false;
 
     public HomeAgent() {
         retailers = new Vector();
+        applianceConsumptionHistory = new HashMap();
+        currentApplianceConsumption = new HashMap();
+
+        /* TODO(Lachlan 28-9-16) Fill with historical data??? */
+        _kwhProducedInPast.add(0.f);
+        _kwhUsedInPast.add(0.f);
+        _kwhNet.add(0.f);
     }
 
     protected void setup() {
@@ -33,32 +49,8 @@ public class HomeAgent extends AbstractAgent {
             String retailer = (String)arg;
             retailers.add(retailer);
         }
-        
-        /* TODO(Lachlan 28-9-16) Fill with historical data??? */
-        _kwhProducedInPast.add(0.f);
-        _kwhUsedInPast.add(0.f);
-        _kwhNet.add(0.f);
-        addBehaviour(new CyclicBehaviour(this) 
-        {
-			private static final long serialVersionUID = 1L;
-
-			public void action() 
-            {
-                ACLMessage msg = receive();
-                if (msg!=null)
-                	System.out.println("Recieved MSG: " + msg.getContent());
-                
-                float kwh = Integer.parseInt( msg.getContent().replace("consuming=", "") );
-                
-                block();
-            }
-        });
     }
-    
-    /* NOTE(Lachlan 28-9-16) History of power produced/used */
-    private ArrayList<Float> _kwhProducedInPast = new ArrayList<Float>();
-    private ArrayList<Float> _kwhUsedInPast = new ArrayList<Float>();
-    private ArrayList<Float> _kwhNet = new ArrayList<Float>(); /* NOTE(Lachlan 28-9-16) Same as (Used - Produced) Possibly too redundant? */
+
     private float predictKWHForNextNHours(float n)
     {
     	/* TODO(Lachlan 28-9-16) Use linear regression/other predicition techniques */
@@ -67,17 +59,17 @@ public class HomeAgent extends AbstractAgent {
     	return result;
     }
 
-    public void configureBehaviours() {
-        // Add a cyclical behaviour to do the comms routine, which keeps adding
-        // the contract net init behaviour
-        TickerBehaviour tickerBehaviour = new TickerBehaviour(this, 2000) {
-            @Override
-            protected void onTick() {
-                negotiateWithRetailers();
-            }
-        };
+    @Override
+    protected void appTickElapsed() {
+        // Update Appliance Consumption history for the tick just elapsed
+        updateApplianceConsumptionHistory();
 
-        addBehaviour(tickerBehaviour);
+        // Negotiate/Predict all that jazz
+        //negotiateWithRetailers();
+    }
+
+    protected void configureBehaviours() {
+        addBehaviour(getReceiveMessagesBehaviour());
     }
 
     private void negotiateWithRetailers() {
@@ -127,8 +119,7 @@ public class HomeAgent extends AbstractAgent {
 
                 // Extract Contract proposals from messages
                 ArrayList<Contract> proposed_contracts = new ArrayList<Contract>();
-                for(ACLMessage msg : proposals)
-                {
+                for (ACLMessage msg : proposals) {
                     Contract c = new Contract();
                     c.associatedMessage = msg;
                     // TODO(Lachlan 5th October 2016)
@@ -136,12 +127,10 @@ public class HomeAgent extends AbstractAgent {
 
                 // Find proposal with lowest predicted cost/hour
                 Contract bestProposal = null;
-                for(Contract c : proposed_contracts)
-                {
+                for (Contract c : proposed_contracts) {
                     float predicted_kwh = predictKWHForNextNHours(c.durationInSeconds * 3600);
                     c.predictedSpendaturePerHour = predicted_kwh / (c.durationInSeconds * 3600);
-                    if(bestProposal == null || c.predictedSpendaturePerHour < bestProposal.predictedSpendaturePerHour)
-                    {
+                    if (bestProposal == null || c.predictedSpendaturePerHour < bestProposal.predictedSpendaturePerHour) {
                         bestProposal = c;
                     }
                 }
@@ -170,6 +159,60 @@ public class HomeAgent extends AbstractAgent {
                 fireStatusChangedEvent("Agent " + inform.getSender().getLocalName() + " is informing");
             }
         });
+    }
+
+    private Behaviour getReceiveMessagesBehaviour() {
+        return new CyclicBehaviour(this)
+        {
+            public void action()
+            {
+                ACLMessage msg = receive();
+                if (msg!=null) {
+                    System.out.println("Recieved MSG: " + msg.getContent());
+
+                    if(msg.getContent().contains("consuming")) {
+                        handleApplianceAgentConsumptionInform(msg.getSender(), msg.getContent());
+                    }
+                }
+
+                block();
+            }
+        };
+    }
+
+    /* Appliance Interaction Handlers */
+    private void handleApplianceAgentConsumptionInform(AID aid, String msg) {
+        float kwh = Integer.parseInt( msg.replace("consuming=", "") );
+
+        // Update the current consumption knowledge of this appliance
+        ApplianceConsumption thisAppliance = currentApplianceConsumption.get(aid.getLocalName());
+
+        // Agent has not yet registered
+        if(thisAppliance == null) {
+            registerAppliance(aid);
+            thisAppliance = currentApplianceConsumption.get(aid.getLocalName());
+        }
+
+        thisAppliance.consuming = kwh;
+    }
+
+    private void registerAppliance(AID aid) {
+        // Create currently consuming AND history
+        currentApplianceConsumption.put(aid.getLocalName(), new ApplianceConsumption(0));
+        applianceConsumptionHistory.put(aid.getLocalName(), new ApplianceConsumptionHistory());
+    }
+
+    private void updateApplianceConsumptionHistory() {
+        Iterator it = currentApplianceConsumption.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+
+            String agentIdentifier = (String) pair.getKey();
+            ApplianceConsumption applianceConsumption = (ApplianceConsumption) pair.getValue();
+
+            ApplianceConsumptionHistory ach = applianceConsumptionHistory.get(agentIdentifier);
+            ach.history.add(new ApplianceConsumption(applianceConsumption.consuming));
+        }
     }
 
     @Override
