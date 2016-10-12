@@ -93,11 +93,11 @@ public class HomeAgent extends AbstractAgent {
         updateApplianceConsumptionHistory();
 
         // Negotiate/Predict all that jazz
-        //negotiateWithRetailers();
+        negotiateWithRetailers();
     }
 
     public void configureBehaviours() {
-    	 addBehaviour(getReceiveMessagesBehaviour());
+    	 //addBehaviour(getReceiveMessagesBehaviour());
     }
 
     private void negotiateWithRetailers() {
@@ -149,16 +149,26 @@ public class HomeAgent extends AbstractAgent {
                 ArrayList<Contract> proposed_contracts = new ArrayList<Contract>();
                 for(ACLMessage msg : proposals)
                 {
-					// * "{id=<INT>;sellingAt=<FLOAT>;buyingAt=<FLOAT>;duration=<INT>}{...}{...}"
-					Pattern p = Pattern.compile("{id=(.*);sellingAt=(.*);buyingAt=(.*);duration=(.*)}");
-					Matcher m = p.matcher(msg.getContent());
-                    Contract c = new Contract();
-                    c.associatedMessage = msg;
-					c.dolarsPerKWH        = Float.parseFloat( m.group(1) );
-					c.dolarsPerKWHBuying  = Float.parseFloat( m.group(2) );
-					c.durationInSeconds   = Float.parseFloat( m.group(3) );
-                    // TODO(Lachlan 5th October 2016)
-					proposed_contracts.add(c);
+					// * "{sellingAt=<FLOAT>;buyingAt=<FLOAT>;duration=<INT>}|{...}|{...}"
+                	
+                	String fullMsg = msg.getContent();
+                	String[] proposalStrings = fullMsg.split("\\|");
+                	
+                	for(String pString : proposalStrings)
+                	{
+                		pString.replace("{", "");
+                		pString.replace("}", "");
+                		String[] components = pString.split(";");
+                		components[0].replace("sellingAt=", "");
+                		components[1].replace("buyingAt=", "");
+                		components[2].replace("duration=", "");
+                		Contract c = new Contract();
+                        c.associatedMessage = msg;
+    					//c.dolarsPerKWH        = Float.parseFloat( m.group(1) );
+    					//c.dolarsPerKWHBuying  = Float.parseFloat( m.group(2) );
+    					//c.durationInSeconds   = Float.parseFloat( m.group(3) );
+    					proposed_contracts.add(c);
+                	}
                 }
 
                 // Find proposal with lowest predicted cost/hour
