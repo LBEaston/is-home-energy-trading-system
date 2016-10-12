@@ -46,9 +46,9 @@ public class Main {
                 peakPrice = (int)args[3];
                 offPeakPrice = (int)args[4];
          */
-        agents.add(agentContainer.createNewAgent("AGL", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434}));
-        agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434}));
-        agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434}));
+        agents.add(agentContainer.createNewAgent("AGL", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 234}));
+        agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 243}));
+        agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 243}));
 
         agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new String[] {"HomeBrand", "AGL", "CityPower"}));
 

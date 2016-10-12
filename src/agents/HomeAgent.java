@@ -156,12 +156,14 @@ public class HomeAgent extends AbstractAgent {
                 	
                 	for(String pString : proposalStrings)
                 	{
-                		pString.replace("{", "");
-                		pString.replace("}", "");
+                		pString = pString.replace("\\{", "");
+                		pString = pString.replace("\\}", "");
                 		String[] components = pString.split(";");
-                		components[0].replace("sellingAt=", "");
-                		components[1].replace("buyingAt=", "");
-                		components[2].replace("duration=", "");
+
+                        String sellingAt = components[0].replace("sellingAt=", "");
+                		String buyingAt = components[1].replace("buyingAt=", "");
+                		String duration = components[2].replace("duration=", "");
+
                 		Contract c = new Contract();
                         c.associatedMessage = msg;
     					//c.dolarsPerKWH        = Float.parseFloat( m.group(1) );
