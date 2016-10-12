@@ -166,9 +166,9 @@ public class HomeAgent extends AbstractAgent {
 
                 		Contract c = new Contract();
                         c.associatedMessage = msg;
-    					//c.dolarsPerKWH        = Float.parseFloat( m.group(1) );
-    					//c.dolarsPerKWHBuying  = Float.parseFloat( m.group(2) );
-    					//c.durationInSeconds   = Float.parseFloat( m.group(3) );
+    					c.dolarsPerKWH        = Float.parseFloat( sellingAt );
+    					c.dolarsPerKWHBuying  = Float.parseFloat( buyingAt );
+    					c.durationInSeconds   = Integer.parseInt( duration );
     					proposed_contracts.add(c);
                 	}
                 }
