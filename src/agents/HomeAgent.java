@@ -156,8 +156,6 @@ public class HomeAgent extends AbstractAgent {
                 	
                 	for(String pString : proposalStrings)
                 	{
-                		pString = pString.replace("\\{", "");
-                		pString = pString.replace("\\}", "");
                 		String[] components = pString.split(";");
 
                         String sellingAt = components[0].replace("sellingAt=", "");
@@ -186,21 +184,19 @@ public class HomeAgent extends AbstractAgent {
                 }
 
                 // Accept best proposal
-                {
-                    ACLMessage msg = bestProposal.associatedMessage;
-                    ACLMessage reply = msg.createReply();
-                    reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
-                    acceptances.addElement(reply);
+                ACLMessage bestMsg = bestProposal.associatedMessage;
+                ACLMessage reply = bestMsg.createReply();
+                reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+                acceptances.addElement(reply);
 
-                    proposed_contracts.remove(msg);
-                }
+                proposed_contracts.remove(bestProposal);
 
                 // Reject remaining elements
-                for(ACLMessage msg : proposals)
+                for(Contract contract : proposed_contracts)
                 {
-                    ACLMessage reply = msg.createReply();
-                    reply.setPerformative(ACLMessage.REJECT_PROPOSAL);
-                    acceptances.addElement(reply);
+                    ACLMessage rejectReply = contract.associatedMessage.createReply();
+                    rejectReply.setPerformative(ACLMessage.REJECT_PROPOSAL);
+                    acceptances.addElement(rejectReply);
                 }
                 inTheMiddleOfANegotiation = false;
             }
