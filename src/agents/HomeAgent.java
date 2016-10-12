@@ -12,6 +12,8 @@ import jade.core.behaviours.CyclicBehaviour;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.*
 ;/**
  * Created by fegwin on 7/09/2016.
@@ -25,7 +27,6 @@ public class HomeAgent extends AbstractAgent {
     private ArrayList<Float> _kwhProducedInPast = new ArrayList<Float>();
     private ArrayList<Float> _kwhUsedInPast = new ArrayList<Float>();
     private ArrayList<Float> _kwhNet = new ArrayList<Float>(); /* NOTE(Lachlan 28-9-16) Same as (Used - Produced) Possibly too redundant? */
-
     private boolean inTheMiddleOfANegotiation = false;
 
     public HomeAgent() {
@@ -49,8 +50,35 @@ public class HomeAgent extends AbstractAgent {
             String retailer = (String)arg;
             retailers.add(retailer);
         }
-    }
+        
+        /* TODO(Lachlan 28-9-16) Fill with historical data??? */
+        _kwhProducedInPast.add(0.f);
+        _kwhUsedInPast.add(0.f);
+        _kwhNet.add(0.f);
+        addBehaviour(new CyclicBehaviour(this) 
+        {
+			private static final long serialVersionUID = 1L;
 
+			public void action() 
+            {
+                ACLMessage msg = receive();
+                if (msg!=null)
+                	System.out.println("Recieved MSG: " + msg.getContent());
+                /*if(msg.getContent().contains("consumming"))
+				{
+					float kwh = Integer.parseInt( msg.getContent().replace("consuming=", "") );
+				}
+				else
+				{
+					// ...
+				}*/
+                
+                
+                block();
+            }
+        });
+    }
+   
     private float predictKWHForNextNHours(float n)
     {
     	/* TODO(Lachlan 28-9-16) Use linear regression/other predicition techniques */
@@ -58,7 +86,7 @@ public class HomeAgent extends AbstractAgent {
     	result = n * _kwhUsedInPast.get(_kwhUsedInPast.size()-1);
     	return result;
     }
-
+    
     @Override
     protected void appTickElapsed() {
         // Update Appliance Consumption history for the tick just elapsed
@@ -68,8 +96,8 @@ public class HomeAgent extends AbstractAgent {
         //negotiateWithRetailers();
     }
 
-    protected void configureBehaviours() {
-        addBehaviour(getReceiveMessagesBehaviour());
+    public void configureBehaviours() {
+    	 addBehaviour(getReceiveMessagesBehaviour());
     }
 
     private void negotiateWithRetailers() {
@@ -119,18 +147,28 @@ public class HomeAgent extends AbstractAgent {
 
                 // Extract Contract proposals from messages
                 ArrayList<Contract> proposed_contracts = new ArrayList<Contract>();
-                for (ACLMessage msg : proposals) {
+                for(ACLMessage msg : proposals)
+                {
+					// * "{id=<INT>;sellingAt=<FLOAT>;buyingAt=<FLOAT>;duration=<INT>}{...}{...}"
+					Pattern p = Pattern.compile("{id=(.*);sellingAt=(.*);buyingAt=(.*);duration=(.*)}");
+					Matcher m = p.matcher(msg.getContent());
                     Contract c = new Contract();
                     c.associatedMessage = msg;
+					c.dolarsPerKWH        = Float.parseFloat( m.group(1) );
+					c.dolarsPerKWHBuying  = Float.parseFloat( m.group(2) );
+					c.durationInSeconds   = Float.parseFloat( m.group(3) );
                     // TODO(Lachlan 5th October 2016)
+					proposed_contracts.add(c);
                 }
 
                 // Find proposal with lowest predicted cost/hour
                 Contract bestProposal = null;
-                for (Contract c : proposed_contracts) {
-                    float predicted_kwh = predictKWHForNextNHours(c.durationInSeconds * 3600);
-                    c.predictedSpendaturePerHour = predicted_kwh / (c.durationInSeconds * 3600);
-                    if (bestProposal == null || c.predictedSpendaturePerHour < bestProposal.predictedSpendaturePerHour) {
+                for(Contract c : proposed_contracts)
+                {
+                    float predicted_kwh = predictKWHForNextNHours(c.durationInSeconds);
+                    c.predictedSpendaturePerHour = predicted_kwh / (c.durationInSeconds);
+                    if(bestProposal == null || c.predictedSpendaturePerHour < bestProposal.predictedSpendaturePerHour)
+                    {
                         bestProposal = c;
                     }
                 }
@@ -160,7 +198,7 @@ public class HomeAgent extends AbstractAgent {
             }
         });
     }
-
+    
     private Behaviour getReceiveMessagesBehaviour() {
         return new CyclicBehaviour(this)
         {
