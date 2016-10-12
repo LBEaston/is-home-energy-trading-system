@@ -15,8 +15,8 @@ public class Proposal {
     }
 
     @Override
-    /*{sellingAt=<FLOAT>;buyingAt=<FLOAT>;duration=<INT>}*/
+    /*sellingAt=<FLOAT>;buyingAt=<FLOAT>;duration=<INT>*/
     public String toString() {
-        return String.format("{sellingAt=%s;buyingAt=%s;duration=%s}", sellingPrice, buyingPrice, duration);
+        return String.format("sellingAt=%s;buyingAt=%s;duration=%s", sellingPrice, buyingPrice, duration);
     }
 }

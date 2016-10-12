@@ -84,7 +84,7 @@ public class RetailerAgent extends AbstractAgent {
 
     /*
      * NOTE(Lachlan 5-10-16) proposed message format for contract proposals
-     * "{sellingAt=<FLOAT>;buyingAt=<FLOAT>;duration=<INT>}|{...}|{...}"
+     * "sellingAt=<FLOAT>;buyingAt=<FLOAT>;duration=<INT>|...|..."
      *
      */
     public String getCurrentRatesMessage() {
