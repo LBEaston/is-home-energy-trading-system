@@ -203,7 +203,7 @@ public class HomeAgent extends AbstractAgent {
 
     private void registerAppliance(AID aid) {
         // Create currently consuming AND history
-        currentApplianceConsumption.put(aid.getLocalName(), new ApplianceConsumption(0));
+        currentApplianceConsumption.put(aid.getLocalName(), new ApplianceConsumption(0, hourOfDay, dayOfWeek));
         applianceConsumptionHistory.put(aid.getLocalName(), new ApplianceConsumptionHistory());
     }
 
@@ -216,7 +216,7 @@ public class HomeAgent extends AbstractAgent {
             ApplianceConsumption applianceConsumption = (ApplianceConsumption) pair.getValue();
 
             ApplianceConsumptionHistory ach = applianceConsumptionHistory.get(agentIdentifier);
-            ach.history.add(new ApplianceConsumption(applianceConsumption.consuming));
+            ach.history.add(new ApplianceConsumption(applianceConsumption.consuming, hourOfDay, dayOfWeek));
         }
     }
     /************************************/

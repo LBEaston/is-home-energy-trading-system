@@ -12,4 +12,3 @@ public class ApplianceConsumptionHistory {
         history = new Vector();
     }
 }
-

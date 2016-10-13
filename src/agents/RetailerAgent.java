@@ -1,5 +1,6 @@
 package agents;
 
+import jade.core.behaviours.Behaviour;
 import jade.domain.FIPAAgentManagement.FailureException;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
 import jade.domain.FIPAAgentManagement.RefuseException;
@@ -52,6 +53,7 @@ public class RetailerAgent extends AbstractAgent {
         offPeakBuyPrice = (int)args[6];
     }
 
+    // Control Logic
     @Override
     public void appTickElapsed() {
         evaluatePeakOffPeakPeriod();
@@ -59,11 +61,15 @@ public class RetailerAgent extends AbstractAgent {
 
     public void configureBehaviours() {
         // Negotiation stuff
+        addBehaviour(getContractNetResponderBehaviour());
+    }
+
+    public Behaviour getContractNetResponderBehaviour() {
         MessageTemplate template = MessageTemplate.and(
                 MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET),
                 MessageTemplate.MatchPerformative(ACLMessage.CFP) );
 
-        addBehaviour(new ContractNetResponder(this, template) {
+        return new ContractNetResponder(this, template) {
             @Override
             protected ACLMessage handleCfp(ACLMessage cfp) throws NotUnderstoodException, RefuseException {
                 ACLMessage propose = cfp.createReply();
@@ -77,8 +83,6 @@ public class RetailerAgent extends AbstractAgent {
             }
             @Override
             protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept) throws FailureException {
-                fireStatusChangedEvent("YAYYYYY :D " + cfp.getSender().getLocalName() + " accepted");
-
                 String acceptedProposalMessage = accept.getContent();
                 Proposal acceptedProposal = Proposal.fromString(acceptedProposalMessage);
 
@@ -86,16 +90,18 @@ public class RetailerAgent extends AbstractAgent {
                 inform.setContent(acceptedProposal.toString());
                 inform.setPerformative(ACLMessage.INFORM);
 
+                System.out.println("accept from " + accept.getSender().getLocalName());
+
                 return inform;
             }
             @Override
             protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
-                String proposalMessage = cfp.getContent();
-                System.out.println("rejection from " + cfp.getSender().getLocalName());
+                System.out.println("rejection from " + reject.getSender().getLocalName());
             }
-        });
+        };
     }
 
+    // Proposal Strategies
     public String getCurrentRatesMessage() {
         String proposalMessage = "";
         for(Proposal p : getProposalStrategies()) {
