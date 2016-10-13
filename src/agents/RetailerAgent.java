@@ -28,6 +28,11 @@ public class RetailerAgent extends AbstractAgent {
     private int currentPeakOffPeakTickCount = 0;
 
     @Override
+    public EnergyAgentType getAgentType() {
+        return EnergyAgentType.RetailerAgent;
+    }
+
+    @Override
     protected void setup() {
         super.setup();
 
@@ -47,9 +52,12 @@ public class RetailerAgent extends AbstractAgent {
         offPeakBuyPrice = (int)args[6];
     }
 
-    public void configureBehaviours() {
-        // Internal state stuff
+    @Override
+    public void appTickElapsed() {
+        evaluatePeakOffPeakPeriod();
+    }
 
+    public void configureBehaviours() {
         // Negotiation stuff
         MessageTemplate template = MessageTemplate.and(
                 MessageTemplate.MatchProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET),
@@ -67,26 +75,27 @@ public class RetailerAgent extends AbstractAgent {
 
                 return propose;
             }
-
             @Override
-            protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose,ACLMessage accept) throws FailureException {
-                    fireStatusChangedEvent("YAYYYYY :D " + cfp.getSender().getLocalName() + " accepted");
-                    ACLMessage inform = accept.createReply();
-                    inform.setPerformative(ACLMessage.INFORM);
-                    return inform;
-            }
+            protected ACLMessage handleAcceptProposal(ACLMessage cfp, ACLMessage propose, ACLMessage accept) throws FailureException {
+                fireStatusChangedEvent("YAYYYYY :D " + cfp.getSender().getLocalName() + " accepted");
 
+                String acceptedProposalMessage = accept.getContent();
+                Proposal acceptedProposal = Proposal.fromString(acceptedProposalMessage);
+
+                ACLMessage inform = accept.createReply();
+                inform.setContent(acceptedProposal.toString());
+                inform.setPerformative(ACLMessage.INFORM);
+
+                return inform;
+            }
+            @Override
             protected void handleRejectProposal(ACLMessage cfp, ACLMessage propose, ACLMessage reject) {
-                fireStatusChangedEvent("Now crying in room :( Eating ice cream because of " + cfp.getSender().getLocalName());
+                String proposalMessage = cfp.getContent();
+                System.out.println("rejection from " + cfp.getSender().getLocalName());
             }
         });
     }
 
-    /*
-     * NOTE(Lachlan 5-10-16) proposed message format for contract proposals
-     * "sellingAt=<FLOAT>;buyingAt=<FLOAT>;duration=<INT>|...|..."
-     *
-     */
     public String getCurrentRatesMessage() {
         String proposalMessage = "";
         for(Proposal p : getProposalStrategies()) {
@@ -109,14 +118,11 @@ public class RetailerAgent extends AbstractAgent {
             appTicksRemainingInCurrentPeakOffPeakPeriod = peakTickCount - currentPeakOffPeakTickCount;
         }
 
-        proposalStrategies.add(new Proposal(isOffPeak ? offPeakSellPrice : peakSellPrice, isOffPeak ? offPeakBuyPrice : peakBuyPrice, appTicksRemainingInCurrentPeakOffPeakPeriod));
+        proposalStrategies.add(new Proposal(isOffPeak ? offPeakSellPrice : peakSellPrice,
+                isOffPeak ? offPeakBuyPrice : peakBuyPrice,
+                appTicksRemainingInCurrentPeakOffPeakPeriod));
 
         return proposalStrategies;
-    }
-
-    @Override
-    public void appTickElapsed() {
-        evaluatePeakOffPeakPeriod();
     }
 
     private void evaluatePeakOffPeakPeriod() {
@@ -132,10 +138,5 @@ public class RetailerAgent extends AbstractAgent {
             isOffPeak = !isOffPeak;
             currentPeakOffPeakTickCount = 0;
         }
-    }
-
-    @Override
-    public EnergyAgentType getAgentType() {
-        return EnergyAgentType.RetailerAgent;
     }
 }

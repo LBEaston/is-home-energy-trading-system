@@ -1,9 +1,7 @@
 package agents;
 
 import jade.core.AID;
-
 import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.TickerBehaviour;
 import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
 import jade.proto.ContractNetInitiator;
@@ -12,32 +10,31 @@ import jade.core.behaviours.CyclicBehaviour;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.*
+
 ;/**
  * Created by fegwin on 7/09/2016.
  */
 public class HomeAgent extends AbstractAgent {
+    // Internal State Variables
     private Vector<String> retailers;
     private HashMap<String, ApplianceConsumptionHistory> applianceConsumptionHistory;
     private HashMap<String, ApplianceConsumption> currentApplianceConsumption;
 
-    /* NOTE(Lachlan 28-9-16) History of power produced/used **Lachie, this stuff can be calculated from the above arrays. I'll do it tomorrow**  */
-    private ArrayList<Float> _kwhProducedInPast = new ArrayList<Float>();
-    private ArrayList<Float> _kwhUsedInPast = new ArrayList<Float>();
-    private ArrayList<Float> _kwhNet = new ArrayList<Float>(); /* NOTE(Lachlan 28-9-16) Same as (Used - Produced) Possibly too redundant? */
+    private Contract currentEnergyContract = null;
+    private int ticksTillNextNegotiation = 0;
+
     private boolean inTheMiddleOfANegotiation = false;
 
     public HomeAgent() {
         retailers = new Vector();
         applianceConsumptionHistory = new HashMap();
         currentApplianceConsumption = new HashMap();
+    }
 
-        /* TODO(Lachlan 28-9-16) Fill with historical data??? */
-        _kwhProducedInPast.add(0.f);
-        _kwhUsedInPast.add(0.f);
-        _kwhNet.add(0.f);
+    @Override
+    public EnergyAgentType getAgentType() {
+        return EnergyAgentType.HomeAgent;
     }
 
     protected void setup() {
@@ -50,60 +47,34 @@ public class HomeAgent extends AbstractAgent {
             String retailer = (String)arg;
             retailers.add(retailer);
         }
-        
-        /* TODO(Lachlan 28-9-16) Fill with historical data??? */
-        _kwhProducedInPast.add(0.f);
-        _kwhUsedInPast.add(0.f);
-        _kwhNet.add(0.f);
-        addBehaviour(new CyclicBehaviour(this) 
-        {
-			private static final long serialVersionUID = 1L;
+    }
 
-			public void action() 
-            {
-                ACLMessage msg = receive();
-                if (msg!=null)
-                	System.out.println("Recieved MSG: " + msg.getContent());
-                /*if(msg.getContent().contains("consumming"))
-				{
-					float kwh = Integer.parseInt( msg.getContent().replace("consuming=", "") );
-				}
-				else
-				{
-					// ...
-				}*/
-                
-                
-                block();
-            }
-        });
-    }
-   
-    private float predictKWHForNextNHours(float n)
-    {
-    	/* TODO(Lachlan 28-9-16) Use linear regression/other predicition techniques */
-    	float result = 0;
-    	result = n * _kwhUsedInPast.get(_kwhUsedInPast.size()-1);
-    	return result;
-    }
-    
+    /** Behaviours and Control Logic **/
     @Override
     protected void appTickElapsed() {
         // Update Appliance Consumption history for the tick just elapsed
         updateApplianceConsumptionHistory();
 
         // Negotiate/Predict all that jazz
-        negotiateWithRetailers();
+        if(ticksTillNextNegotiation <= 0) {
+            negotiateWithRetailers();
+        }
+
+        ticksTillNextNegotiation--;
     }
 
+    @Override
     public void configureBehaviours() {
-    	 //addBehaviour(getReceiveMessagesBehaviour());
+        addBehaviour(getReceiveMessagesBehaviour());
     }
 
     private void negotiateWithRetailers() {
         if(inTheMiddleOfANegotiation) return;
-        inTheMiddleOfANegotiation = true;
 
+        addBehaviour(getRetailerNegotiationBehaviour());
+    }
+
+    private Behaviour getRetailerNegotiationBehaviour() {
         ACLMessage cfpMessage = new ACLMessage(ACLMessage.CFP);
 
         // Add cfp recipients
@@ -113,71 +84,48 @@ public class HomeAgent extends AbstractAgent {
 
         cfpMessage.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
         cfpMessage.setReplyByDate(new Date(System.currentTimeMillis() + 10000));
-        cfpMessage.setContent("dummy-action");
 
-        addBehaviour(new ContractNetInitiator(this, cfpMessage) {
-            protected void handlePropose(ACLMessage propose, Vector v) {
-            	
-                fireStatusChangedEvent("Agent " + propose.getSender().getLocalName() + " is proposing");
-            }
+        inTheMiddleOfANegotiation = true;
 
-            protected void handleRefuse(ACLMessage refuse) {
-                fireStatusChangedEvent("Agent " + refuse.getSender().getLocalName() + " is refusing");
-            }
-
-            protected void handleFailure(ACLMessage failure) {
-                fireStatusChangedEvent("Agent " + failure.getSender().getLocalName() + " is proposing");
-            }
-
+        return new ContractNetInitiator(this, cfpMessage) {
+            protected void handlePropose(ACLMessage propose, Vector v) { }
+            protected void handleRefuse(ACLMessage refuse) { }
+            protected void handleFailure(ACLMessage failure) { }
             protected void handleAllResponses(Vector responses, Vector acceptances) {
-                fireStatusChangedEvent("Various responses received");
-
                 // Evaluate proposals.
-                ACLMessage accept = null;
                 Enumeration e = responses.elements();
 
                 // Get a handle not all proposals
-                ArrayList<ACLMessage> proposals = new ArrayList<ACLMessage>();
+                Vector<ACLMessage> proposalMessages = new Vector();
                 while (e.hasMoreElements()) {
                     ACLMessage msg = (ACLMessage) e.nextElement();
                     if (msg.getPerformative() == ACLMessage.PROPOSE) {
-                        proposals.add(msg);
+                        proposalMessages.add(msg);
                     }
                 }
 
                 // Extract Contract proposals from messages
-                ArrayList<Contract> proposed_contracts = new ArrayList<Contract>();
-                for(ACLMessage msg : proposals)
+                Vector<Contract> proposedContracts = new Vector();
+                for(ACLMessage msg : proposalMessages)
                 {
-					// * "{sellingAt=<FLOAT>;buyingAt=<FLOAT>;duration=<INT>}|{...}|{...}"
-                	
-                	String fullMsg = msg.getContent();
-                	String[] proposalStrings = fullMsg.split("\\|");
-                	
-                	for(String pString : proposalStrings)
-                	{
-                		String[] components = pString.split(";");
+                    String compoundProposalString = msg.getContent();
+                    Vector<Proposal> proposalsFromAgent = Proposal.fromCompoundString(compoundProposalString);
 
-                        String sellingAt = components[0].replace("sellingAt=", "");
-                		String buyingAt = components[1].replace("buyingAt=", "");
-                		String duration = components[2].replace("duration=", "");
+                    for(Proposal p : proposalsFromAgent)
+                    {
+                        Contract c = new Contract(msg, p);
 
-                		Contract c = new Contract();
-                        c.associatedMessage = msg;
-    					c.dolarsPerKWH        = Float.parseFloat( sellingAt );
-    					c.dolarsPerKWHBuying  = Float.parseFloat( buyingAt );
-    					c.durationInSeconds   = Integer.parseInt( duration );
-    					proposed_contracts.add(c);
-                	}
+                        proposedContracts.add(c);
+                    }
                 }
 
                 // Find proposal with lowest predicted cost/hour
                 Contract bestProposal = null;
-                for(Contract c : proposed_contracts)
+                for(Contract c : proposedContracts)
                 {
-                    float predicted_kwh = predictKWHForNextNHours(c.durationInSeconds);
-                    c.predictedSpendaturePerHour = predicted_kwh / (c.durationInSeconds);
-                    if(bestProposal == null || c.predictedSpendaturePerHour < bestProposal.predictedSpendaturePerHour)
+                    float predicted_kwh = predictKWHForNextNHours(c.duration);
+                    c.predictedExpenditurePerHour = predicted_kwh / (c.duration);
+                    if(bestProposal == null || c.predictedExpenditurePerHour < bestProposal.predictedExpenditurePerHour)
                     {
                         bestProposal = c;
                     }
@@ -186,13 +134,16 @@ public class HomeAgent extends AbstractAgent {
                 // Accept best proposal
                 ACLMessage bestMsg = bestProposal.associatedMessage;
                 ACLMessage reply = bestMsg.createReply();
+
                 reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+                reply.setContent(bestProposal.toString());
+
                 acceptances.addElement(reply);
 
-                proposed_contracts.remove(bestProposal);
+                proposedContracts.remove(bestProposal);
 
                 // Reject remaining elements
-                for(Contract contract : proposed_contracts)
+                for(Contract contract : proposedContracts)
                 {
                     ACLMessage rejectReply = contract.associatedMessage.createReply();
                     rejectReply.setPerformative(ACLMessage.REJECT_PROPOSAL);
@@ -200,18 +151,16 @@ public class HomeAgent extends AbstractAgent {
                 }
                 inTheMiddleOfANegotiation = false;
             }
-
             protected void handleInform(ACLMessage inform) {
-                fireStatusChangedEvent("Agent " + inform.getSender().getLocalName() + " is informing");
+                currentEnergyContract = new Contract(inform, Proposal.fromString(inform.getContent()));
+                ticksTillNextNegotiation = currentEnergyContract.duration;
             }
-        });
+        };
     }
-    
+
     private Behaviour getReceiveMessagesBehaviour() {
-        return new CyclicBehaviour(this)
-        {
-            public void action()
-            {
+        return new CyclicBehaviour(this) {
+            public void action() {
                 ACLMessage msg = receive();
                 if (msg!=null) {
                     System.out.println("Recieved MSG: " + msg.getContent());
@@ -225,8 +174,18 @@ public class HomeAgent extends AbstractAgent {
             }
         };
     }
+    /**********************************/
 
-    /* Appliance Interaction Handlers */
+    /** Prediction Logic **/
+    private float predictKWHForNextNHours(float n) {
+    	/* TODO(Lachlan 28-9-16) Use linear regression/other predicition techniques */
+    	float result = 0;
+
+    	return result;
+    }
+    /**********************/
+
+    /** Appliance Interaction Handlers **/
     private void handleApplianceAgentConsumptionInform(AID aid, String msg) {
         float kwh = Integer.parseInt( msg.replace("consuming=", "") );
 
@@ -260,12 +219,6 @@ public class HomeAgent extends AbstractAgent {
             ach.history.add(new ApplianceConsumption(applianceConsumption.consuming));
         }
     }
-
-    @Override
-    public EnergyAgentType getAgentType() {
-        return EnergyAgentType.HomeAgent;
-    }
-    
-    
+    /************************************/
     }
 
