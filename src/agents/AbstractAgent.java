@@ -6,6 +6,7 @@ import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import ui.interfaces.Informable;
 
+import java.time.DayOfWeek;
 import java.util.Vector;
 
 /**
@@ -13,6 +14,10 @@ import java.util.Vector;
  */
 public abstract class AbstractAgent extends Agent implements Observable, Destroyable {
     private Vector<Informable> statusEventListeners;
+
+    // Timekeeping
+    protected DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
+    protected int hourOfDay = 0;
     protected int appTicksElapsed = 0;
 
     public void addStatusEventListener(Informable listener) {
@@ -57,9 +62,45 @@ public abstract class AbstractAgent extends Agent implements Observable, Destroy
             @Override
             protected void onTick() {
                 appTicksElapsed++;
+                updateDayAndHour();
                 appTickElapsed();
             }
         });
+    }
+
+    private void updateDayAndHour() {
+        hourOfDay++;
+
+        if(hourOfDay > 23 ) {
+            hourOfDay = 0;
+            incrementDayOfWeek();
+        }
+    }
+
+    private void incrementDayOfWeek() {
+        switch (dayOfWeek) {
+            case MONDAY:
+                dayOfWeek = DayOfWeek.TUESDAY;
+                break;
+            case TUESDAY:
+                dayOfWeek = DayOfWeek.WEDNESDAY;
+                break;
+            case WEDNESDAY:
+                dayOfWeek = DayOfWeek.THURSDAY;
+                break;
+            case THURSDAY:
+                dayOfWeek = DayOfWeek.FRIDAY;
+                break;
+            case FRIDAY:
+                dayOfWeek = DayOfWeek.SATURDAY;
+                break;
+            case SATURDAY:
+                dayOfWeek = DayOfWeek.SUNDAY;
+                break;
+            case SUNDAY:
+                dayOfWeek = DayOfWeek.MONDAY;
+                break;
+        }
     }
 
     // Child classes to implement this method as required
