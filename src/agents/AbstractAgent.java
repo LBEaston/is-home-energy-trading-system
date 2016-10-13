@@ -4,6 +4,7 @@ import agents.interfaces.Destroyable;
 import agents.interfaces.Observable;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
+import ui.StatusContainerBase;
 import ui.interfaces.Informable;
 
 import java.time.DayOfWeek;
@@ -28,7 +29,7 @@ public abstract class AbstractAgent extends Agent implements Observable, Destroy
         statusEventListeners.add(listener);
     }
 
-    public void fireStatusChangedEvent(Object newStatus) {
+    public void fireStatusChangedEvent(StatusContainerBase newStatus) {
         if(statusEventListeners == null || statusEventListeners.isEmpty()) return;
 
         for(Informable listener : statusEventListeners) {

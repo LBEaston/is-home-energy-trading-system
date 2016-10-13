@@ -77,7 +77,6 @@ public class RetailerAgent extends AbstractAgent {
 
                 String proposalMessage = getCurrentRatesMessage();
                 propose.setContent(proposalMessage);
-                fireStatusChangedEvent("Proposing to " + cfp.getSender().getLocalName() + " with " + proposalMessage);
 
                 return propose;
             }

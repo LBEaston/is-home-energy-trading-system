@@ -2,8 +2,7 @@ package ui;
 
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
-
-import javax.swing.*;
+import ui.containers.RetailerStatusContainer;
 
 /**
  * Created by fegwin on 27/09/2016.
@@ -14,7 +13,7 @@ public class RetailAgentUiElement extends AbstractAgentUiElement {
     }
 
     @Override
-    public void inform(Object currentStatus) {
-
+    public void inform(StatusContainerBase currentStatus) {
+        RetailerStatusContainer status = (RetailerStatusContainer)currentStatus;
     }
 }

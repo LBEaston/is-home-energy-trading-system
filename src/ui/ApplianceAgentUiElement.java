@@ -1,13 +1,10 @@
 package ui;
 
-import agents.interfaces.Observable;
-import com.sun.javafx.font.FontFactory;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
-import javafx.geometry.HorizontalDirection;
+import ui.containers.ApplianceStatusContainer;
 
 import javax.swing.*;
-import javax.swing.border.SoftBevelBorder;
 import java.awt.*;
 
 /**
@@ -30,8 +27,8 @@ public class ApplianceAgentUiElement extends AbstractAgentUiElement {
     }
 
     @Override
-    public void inform(Object currentStatus) {
-        int currentConsumptionLevel = (int)currentStatus;
+    public void inform(StatusContainerBase currentStatus) {
+        int currentConsumptionLevel = ((ApplianceStatusContainer)currentStatus).consuming;
 
         if(currentConsumptionLevel > 0) {
             this.setBackground(Color.red);

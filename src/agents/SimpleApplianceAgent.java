@@ -4,6 +4,7 @@ import agents.interfaces.ApplianceAgent;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
+import ui.containers.ApplianceStatusContainer;
 import ui.interfaces.Informable;
 
 import java.security.InvalidParameterException;
@@ -43,18 +44,8 @@ public class SimpleApplianceAgent extends AbstractAgent implements ApplianceAgen
 
     @Override
     protected void configureBehaviours() {
-        //addBehaviour(getSayHelloBehaviour());
         addBehaviour(getInformBehaviour());
     }
-
-//    protected OneShotBehaviour getSayHelloBehaviour() {
-//        return new OneShotBehaviour() {
-//            @Override
-//            public void action() {
-//                sayHelloToHomeAgent();
-//            }
-//        };
-//    }
 
     protected OneShotBehaviour getInformBehaviour() {
         return new OneShotBehaviour() {
@@ -75,20 +66,8 @@ public class SimpleApplianceAgent extends AbstractAgent implements ApplianceAgen
         informMessage.setLanguage("english");
 
         send(informMessage);
-        fireStatusChangedEvent(currentlyConsuming());
+        fireStatusChangedEvent(new ApplianceStatusContainer(currentlyConsuming(), hourOfDay, dayOfWeek));
     }
-
-//    private void sayHelloToHomeAgent() {
-//        ACLMessage informMessage = new ACLMessage(ACLMessage.INFORM);
-//
-//        informMessage.setSender(new AID(this.getLocalName(), AID.ISLOCALNAME));
-//        informMessage.addReceiver(new AID(homeAgentName, AID.ISLOCALNAME));
-//        informMessage.setContent("hello");
-//        informMessage.setOntology("homeenergy");
-//        informMessage.setLanguage("english");
-//
-//        send(informMessage);
-//    }
 
     @Override
     public void addStatusEventListener(Informable listener) {
