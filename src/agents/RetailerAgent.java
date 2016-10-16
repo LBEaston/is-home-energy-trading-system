@@ -1,5 +1,6 @@
 package agents;
 
+import agents.models.Proposal;
 import jade.core.behaviours.Behaviour;
 import jade.domain.FIPAAgentManagement.FailureException;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;

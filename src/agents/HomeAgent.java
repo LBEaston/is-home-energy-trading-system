@@ -1,5 +1,9 @@
 package agents;
 
+import agents.models.ApplianceConsumption;
+import agents.models.ApplianceConsumptionHistory;
+import agents.models.Contract;
+import agents.models.Proposal;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.domain.FIPANames;
@@ -55,12 +59,12 @@ public class HomeAgent extends AbstractAgent {
         // Update Appliance Consumption history for the tick just elapsed
         updateApplianceConsumptionHistory();
 
-        // Negotiate/Predict all that jazz
-        if(ticksTillNextNegotiation <= 0) {
-            negotiateWithRetailers();
-        }
-
-        ticksTillNextNegotiation--;
+//        // Negotiate/Predict all that jazz
+//        if(ticksTillNextNegotiation <= 0) {
+//            negotiateWithRetailers();
+//        }
+//
+//        ticksTillNextNegotiation--;
     }
 
     @Override
@@ -83,7 +87,7 @@ public class HomeAgent extends AbstractAgent {
         }
 
         cfpMessage.setProtocol(FIPANames.InteractionProtocol.FIPA_CONTRACT_NET);
-        cfpMessage.setReplyByDate(new Date(System.currentTimeMillis() + 10000));
+        cfpMessage.setReplyByDate(new Date(System.currentTimeMillis() + APP_TICK));
 
         inTheMiddleOfANegotiation = true;
 
@@ -163,8 +167,6 @@ public class HomeAgent extends AbstractAgent {
             public void action() {
                 ACLMessage msg = receive();
                 if (msg!=null) {
-                    System.out.println("Recieved MSG: " + msg.getContent());
-
                     if(msg.getContent().contains("consuming")) {
                         handleApplianceAgentConsumptionInform(msg.getSender(), msg.getContent());
                     }
@@ -174,7 +176,6 @@ public class HomeAgent extends AbstractAgent {
             }
         };
     }
-    /**********************************/
 
     /** Prediction Logic **/
     private float predictKWHForNextNHours(float n) {
@@ -183,7 +184,6 @@ public class HomeAgent extends AbstractAgent {
 
     	return result;
     }
-    /**********************/
 
     /** Appliance Interaction Handlers **/
     private void handleApplianceAgentConsumptionInform(AID aid, String msg) {
@@ -219,6 +219,5 @@ public class HomeAgent extends AbstractAgent {
             ach.history.add(new ApplianceConsumption(applianceConsumption.consuming, hourOfDay, dayOfWeek));
         }
     }
-    /************************************/
     }
 

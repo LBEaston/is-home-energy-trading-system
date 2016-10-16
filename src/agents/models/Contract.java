@@ -1,4 +1,4 @@
-package agents;
+package agents.models;
 
 import jade.lang.acl.ACLMessage;
 

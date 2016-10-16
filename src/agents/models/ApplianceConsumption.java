@@ -1,4 +1,4 @@
-package agents;
+package agents.models;
 
 import java.time.DayOfWeek;
 

@@ -14,6 +14,8 @@ import java.util.Vector;
  * Created by fegwin on 15/09/2016.
  */
 public abstract class AbstractAgent extends Agent implements Observable, Destroyable {
+    static final int APP_TICK = 1000;
+
     private Vector<Informable> statusEventListeners;
 
     // Timekeeping
@@ -59,7 +61,7 @@ public abstract class AbstractAgent extends Agent implements Observable, Destroy
     }
 
     private void configureAppTicker() {
-        addBehaviour(new TickerBehaviour(this, 10000) {
+        addBehaviour(new TickerBehaviour(this, APP_TICK) {
             @Override
             protected void onTick() {
                 appTicksElapsed++;

@@ -1,4 +1,7 @@
 import agents.*;
+import agents.models.ApplianceProfile;
+import agents.models.DayUsageProfile;
+import agents.models.PeakUsagePeriod;
 import jade.core.Runtime;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
@@ -7,6 +10,7 @@ import jade.wrapper.*;
 import ui.SmartHomeEnergyApplication;
 
 import javax.swing.*;
+import java.time.DayOfWeek;
 import java.util.Vector;
 
 /**
@@ -50,14 +54,13 @@ public class Main {
         agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 243}));
         agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 243}));
 
-        agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new String[] {"HomeBrand", "AGL", "CityPower"}));
+        agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new Object[] {"HomeBrand", "AGL", "CityPower"}));
 
-        agents.add(agentContainer.createNewAgent("SolarPanel1", CyclicalVariableConsumptionApplianceAgent.class.getName(), new Object[] {"HomeAgent", -234, -453, -145}));
-        agents.add(agentContainer.createNewAgent("SolarPanel2", CyclicalVariableConsumptionApplianceAgent.class.getName(), new Object[] {"HomeAgent", -200, -783, -35}));
-        agents.add(agentContainer.createNewAgent("TV1", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent", 45}));
-        agents.add(agentContainer.createNewAgent("TV2", CyclicalApplianceAgent.class.getName(), new Object[] {"HomeAgent", 78}));
-        agents.add(agentContainer.createNewAgent("WashingMachine", CyclicalVariableConsumptionApplianceAgent.class.getName(), new Object[] {"HomeAgent", 98, 53, 168}));
-        agents.add(agentContainer.createNewAgent("Fridge", SimpleApplianceAgent.class.getName(), new Object[] {"HomeAgent", 1411}));
+        Vector<ApplianceProfile> applianceProfiles = getApplianceAgentProfiles();
+
+        for(ApplianceProfile ap : applianceProfiles) {
+            agents.add(agentContainer.createNewAgent(ap.applianceName, ApplianceAgent.class.getName(), new Object[] {"HomeAgent", ap}));
+        }
 
         // Starting our agents
         for(AgentController agent : agents) {
@@ -67,5 +70,137 @@ public class Main {
         //5. Fire up our user interface
         SmartHomeEnergyApplication smartHomeEnergyApplicationUi = new SmartHomeEnergyApplication(agents);
         SwingUtilities.invokeLater(smartHomeEnergyApplicationUi);
+    }
+
+    private static Vector<ApplianceProfile> getApplianceAgentProfiles() {
+        Vector<ApplianceProfile> applianceProfiles = new Vector();
+
+        // Solar Panel 1
+        applianceProfiles.add(new ApplianceProfile("SolarPanel1", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.TUESDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.THURSDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.FRIDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SATURDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                })
+        }));
+
+        // Solar Panel 2
+        applianceProfiles.add(new ApplianceProfile("SolarPanel2", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.TUESDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.THURSDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.FRIDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SATURDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, -453, -234, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                })
+        }));
+
+        // Tv 1
+        applianceProfiles.add(new ApplianceProfile("TV1", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, 45, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 45, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 45, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 45, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 45, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 45, 45, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 45, 45, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                })
+        }));
+
+        // Tv 1
+        applianceProfiles.add(new ApplianceProfile("TV2", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, 78, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 78, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 78, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 78, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 78, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 78, 78, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 78, 78, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 17, 6)
+                })
+        }));
+
+        // Washing Machine
+        applianceProfiles.add(new ApplianceProfile("WashingMachine", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, 0, 0, new PeakUsagePeriod[] {}),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 0, 0, new PeakUsagePeriod[] {}),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, 0, new PeakUsagePeriod[] {}),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 0, 0, new PeakUsagePeriod[] {}),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 0, 0, new PeakUsagePeriod[] {}),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 168, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 13, 2)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 168, 0, new PeakUsagePeriod[] {
+                        new PeakUsagePeriod(10, 13, 2)
+                })
+        }));
+
+        // Fridge
+        applianceProfiles.add(new ApplianceProfile("Fridge", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, 0, 1400, new PeakUsagePeriod[] {}),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 0, 1400, new PeakUsagePeriod[] {}),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, 1400, new PeakUsagePeriod[] {}),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 0, 1400, new PeakUsagePeriod[] {}),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 0, 1400, new PeakUsagePeriod[] {}),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 0, 1400, new PeakUsagePeriod[] {}),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 0, 1400, new PeakUsagePeriod[] {})
+        }));
+
+        return applianceProfiles;
     }
 }
