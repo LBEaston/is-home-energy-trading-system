@@ -16,12 +16,14 @@ import java.awt.*;
  */
 public abstract class AbstractAgentUiElement extends JPanel implements Informable {
     protected AgentController agentController;
+    protected boolean showDateAndTime;
 
     private JLabel currentHourOfDay;
     private JLabel currentDayOfWeek;
 
-    AbstractAgentUiElement(AgentController agentController) throws StaleProxyException {
+    AbstractAgentUiElement(AgentController agentController, boolean showDateAndTime) throws StaleProxyException {
         super();
+        this.showDateAndTime = showDateAndTime;
         this.setLayout(new GridLayout(0, 1));
 
         this.setBackground(Color.white);
@@ -41,12 +43,14 @@ public abstract class AbstractAgentUiElement extends JPanel implements Informabl
 
         this.add(title);
 
-        // add timekeeping
-        currentHourOfDay = new JLabel();
-        currentDayOfWeek = new JLabel();
+        if(showDateAndTime) {
+            // add timekeeping
+            currentHourOfDay = new JLabel();
+            currentDayOfWeek = new JLabel();
 
-        this.add(currentDayOfWeek);
-        this.add(currentHourOfDay);
+            this.add(currentDayOfWeek);
+            this.add(currentHourOfDay);
+        }
     }
 
     protected String getAgentSimpleName() throws StaleProxyException {
@@ -55,7 +59,9 @@ public abstract class AbstractAgentUiElement extends JPanel implements Informabl
 
     @Override
     public void inform(StatusContainerBase currentStatus) {
-        currentDayOfWeek.setText("Day of week: " + currentStatus.dayOfWeek.toString());
-        currentHourOfDay.setText("Hour of day: " + currentStatus.hourOfDay);
+        if(showDateAndTime) {
+            currentDayOfWeek.setText("Day of week: " + currentStatus.dayOfWeek.toString());
+            currentHourOfDay.setText("Hour of day: " + currentStatus.hourOfDay);
+        }
     }
 }

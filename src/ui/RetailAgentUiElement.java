@@ -10,7 +10,7 @@ import ui.containers.StatusContainerBase;
  */
 public class RetailAgentUiElement extends AbstractAgentUiElement {
     public RetailAgentUiElement(AgentController agentController) throws StaleProxyException {
-        super(agentController);
+        super(agentController, false);
     }
 
     @Override

@@ -15,7 +15,7 @@ public class ApplianceAgentUiElement extends AbstractAgentUiElement {
     private JLabel currentlyConsuming;
 
     public ApplianceAgentUiElement(AgentController agentController) throws StaleProxyException {
-        super(agentController);
+        super(agentController, false);
     }
 
     @Override

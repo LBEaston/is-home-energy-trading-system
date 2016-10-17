@@ -17,7 +17,7 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
     private JLabel currentContractDetails;
 
     public HomeAgentUiElement(AgentController agentController) throws StaleProxyException {
-        super(agentController);
+        super(agentController, true);
 
         currentNetConsumption = new JLabel();
         previousNetConsumption = new JLabel();
