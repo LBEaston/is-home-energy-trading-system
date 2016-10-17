@@ -1,4 +1,4 @@
-package ui;
+package ui.containers;
 
 import java.time.DayOfWeek;
 

@@ -1,7 +1,5 @@
 package ui.containers;
 
-import ui.StatusContainerBase;
-
 import java.time.DayOfWeek;
 
 /**

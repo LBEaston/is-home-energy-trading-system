@@ -1,6 +1,6 @@
 package ui.interfaces;
 
-import ui.StatusContainerBase;
+import ui.containers.StatusContainerBase;
 
 /**
  * Created by fegwin on 15/09/2016.

@@ -12,10 +12,7 @@ import java.util.*;
  * Created by fegwin on 7/09/2016.
  */
 public class SmartHomeEnergyApplication implements Runnable {
-    private JPanel rootPanel;
-    private JPanel retailerPanel;
-    private JPanel appliancePanel;
-    private JComponent homeAgnet;
+    private JComponent rootPanel;
 
     private Vector<AgentController> allAgents;
 
@@ -27,17 +24,11 @@ public class SmartHomeEnergyApplication implements Runnable {
     public void run() {
         JFrame rootContainer = new JFrame("Smart Home Energy");
 
-        rootContainer.setPreferredSize(new Dimension(500, 450));
+        rootContainer.setPreferredSize(new Dimension(400, 800));
         rootContainer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         rootPanel = new JPanel();
-        rootPanel.setLayout(new GridLayout(3, 1));
-
-        retailerPanel = new JPanel();
-        retailerPanel.setLayout(new GridLayout(1, 3));
-
-        appliancePanel = new JPanel();
-        appliancePanel.setLayout(new GridLayout(3, 3));
+        rootPanel.setLayout(new GridLayout(0, 1));
 
         try {
             populateWithAgents();
@@ -47,12 +38,7 @@ public class SmartHomeEnergyApplication implements Runnable {
             e.printStackTrace();
         }
 
-        rootPanel.add(retailerPanel);
-        rootPanel.add(homeAgnet);
-        rootPanel.add(appliancePanel);
-
-        rootContainer.getContentPane().add(rootPanel);
-
+        rootContainer.add(rootPanel);
         rootContainer.pack();
         rootContainer.setVisible(true);
     }
@@ -77,15 +63,15 @@ public class SmartHomeEnergyApplication implements Runnable {
         {
             case RetailerAgent:
                 agentUiElement = new RetailAgentUiElement(agentController);
-                retailerPanel.add(agentUiElement);
+                rootPanel.add(agentUiElement);
                 break;
             case HomeAgent:
                 agentUiElement = new HomeAgentUiElement(agentController);
-                homeAgnet = agentUiElement;
+                rootPanel.add(agentUiElement);
                 break;
             case ApplianceAgent:
                 agentUiElement = new ApplianceAgentUiElement(agentController);
-                appliancePanel.add(agentUiElement);
+                rootPanel.add(agentUiElement);
                 break;
         }
 

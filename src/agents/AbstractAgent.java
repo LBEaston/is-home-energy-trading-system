@@ -4,7 +4,7 @@ import agents.interfaces.Destroyable;
 import agents.interfaces.Observable;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
-import ui.StatusContainerBase;
+import ui.containers.StatusContainerBase;
 import ui.interfaces.Informable;
 
 import java.time.DayOfWeek;
@@ -14,7 +14,7 @@ import java.util.Vector;
  * Created by fegwin on 15/09/2016.
  */
 public abstract class AbstractAgent extends Agent implements Observable, Destroyable {
-    static final int APP_TICK = 1000;
+    static final int APP_TICK = 5000;
 
     private Vector<Informable> statusEventListeners;
 
@@ -109,5 +109,5 @@ public abstract class AbstractAgent extends Agent implements Observable, Destroy
     // Child classes to implement this method as required
     protected void appTickElapsed() { }
 
-    protected abstract void configureBehaviours();
+    protected void configureBehaviours() {}
 }

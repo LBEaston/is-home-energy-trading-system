@@ -39,13 +39,13 @@ public class ApplianceAgent extends AbstractAgent {
 
     /** Behaviours and Control Logic **/
     @Override
-    protected void appTickElapsed() {
-        addBehaviour(getInformBehaviour());
+    protected void configureBehaviours() {
+        addBehaviour(getSayHelloBehaviour());
     }
 
     @Override
-    protected void configureBehaviours() {
-        // Nothing to configure - We only operate on app ticks
+    protected void appTickElapsed() {
+        addBehaviour(getInformBehaviour());
     }
 
     protected OneShotBehaviour getInformBehaviour() {
@@ -57,17 +57,36 @@ public class ApplianceAgent extends AbstractAgent {
         };
     }
 
+    protected OneShotBehaviour getSayHelloBehaviour() {
+        return new OneShotBehaviour() {
+            @Override
+            public void action() {
+                sayHello();
+            }
+        };
+    }
+
     protected void informCurrentlyConsuming() {
+        int currentlyConsuming = currentlyConsuming();
+
         ACLMessage informMessage = new ACLMessage(ACLMessage.INFORM);
 
         informMessage.setSender(new AID(this.getLocalName(), AID.ISLOCALNAME));
         informMessage.addReceiver(new AID(homeAgentName, AID.ISLOCALNAME));
-        informMessage.setContent("consuming=" + currentlyConsuming());
-        informMessage.setOntology("homeenergy");
-        informMessage.setLanguage("english");
+        informMessage.setContent("consuming=" + currentlyConsuming);
 
         send(informMessage);
-        fireStatusChangedEvent(new ApplianceStatusContainer(currentlyConsuming(), hourOfDay, dayOfWeek));
+        fireStatusChangedEvent(new ApplianceStatusContainer(currentlyConsuming, hourOfDay, dayOfWeek));
+    }
+
+    protected void sayHello() {
+        ACLMessage informMessage = new ACLMessage(ACLMessage.INFORM);
+
+        informMessage.setSender(new AID(this.getLocalName(), AID.ISLOCALNAME));
+        informMessage.addReceiver(new AID(homeAgentName, AID.ISLOCALNAME));
+        informMessage.setContent("hello");
+
+        send(informMessage);
     }
 
     private int currentlyConsuming() {

@@ -3,6 +3,7 @@ package ui;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 import ui.containers.ApplianceStatusContainer;
+import ui.containers.StatusContainerBase;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,11 +24,13 @@ public class ApplianceAgentUiElement extends AbstractAgentUiElement {
 
         // Add the consuming
         currentlyConsuming = new JLabel();
+
         this.add(currentlyConsuming);
     }
 
     @Override
     public void inform(StatusContainerBase currentStatus) {
+        super.inform(currentStatus);
         int currentConsumptionLevel = ((ApplianceStatusContainer)currentStatus).consuming;
 
         if(currentConsumptionLevel > 0) {
