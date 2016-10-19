@@ -1,6 +1,5 @@
 package agents.models;
 
-import com.sun.tools.corba.se.idl.constExpr.EvaluationException;
 import java.security.InvalidParameterException;
 import java.time.DayOfWeek;
 
@@ -18,7 +17,7 @@ public class ApplianceProfile {
         if(!isValid()) throw new InvalidParameterException("Invalid ApplianceProfile params");
     }
 
-    public int getCurrentConsumptionValue(DayOfWeek dayOfWeek, int hourOfDay) throws EvaluationException {
+    public int getCurrentConsumptionValue(DayOfWeek dayOfWeek, int hourOfDay) throws Exception {
         DayUsageProfile current = null;
 
         for(DayUsageProfile dup : dayUsageProfiles) {
@@ -28,7 +27,7 @@ public class ApplianceProfile {
             }
         }
 
-        if(current == null) throw new EvaluationException("Unable to evaluate day usage");
+        if(current == null) throw new Exception("Unable to evaluate day usage");
 
         return current.getCurrentConsumptionValue(hourOfDay);
     }

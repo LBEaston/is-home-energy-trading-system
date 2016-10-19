@@ -35,9 +35,9 @@ public class HomeAgent extends AbstractAgent {
     private boolean inTheMiddleOfANegotiation = false;
 
     public HomeAgent() {
-        retailers = new Vector();
-        applianceConsumptionHistory = new HashMap();
-        currentApplianceConsumption = new HashMap();
+        retailers = new Vector<String>();
+        applianceConsumptionHistory = new HashMap<String, ApplianceConsumptionHistory>();
+        currentApplianceConsumption = new HashMap<String, ApplianceConsumption>();
     }
 
     @Override
@@ -127,13 +127,14 @@ public class HomeAgent extends AbstractAgent {
 
                 // Find proposal with lowest predicted cost/hour
                 Contract bestProposal = null;
+                double bestUtility = 0;
                 for(Contract c : proposedContracts)
                 {
-                    float predicted_kwh = predictKWHForNextNHours(c.duration);
-                    c.predictedExpenditurePerHour = predicted_kwh / (c.duration);
-                    if(bestProposal == null || c.predictedExpenditurePerHour < bestProposal.predictedExpenditurePerHour)
+                    double currentUtility = getUtilityOfContract(c);
+                    if(bestProposal == null || currentUtility < bestUtility)
                     {
                         bestProposal = c;
+                        bestUtility = currentUtility;
                     }
                 }
 
@@ -162,6 +163,23 @@ public class HomeAgent extends AbstractAgent {
                 ticksTillNextNegotiation = currentEnergyContract.duration;
             }
         };
+    }
+    
+    private double getUtilityOfContract(Contract c) {
+    	double result = 0;
+    	double predicted_kwh = predictKWHForNextNHours(c.duration);
+    	
+    	if (predicted_kwh >= 0.0)
+    	{
+    		// predicted going to consume more
+    		
+    	}
+    	else
+    	{
+    		// predicted going to produced more
+    	}
+    	
+    	return result;
     }
 
     private Behaviour getReceiveHelloMessagesBehaviour() {

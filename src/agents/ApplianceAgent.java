@@ -1,7 +1,6 @@
 package agents;
 
 import agents.models.ApplianceProfile;
-import com.sun.tools.corba.se.idl.constExpr.EvaluationException;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -92,7 +91,8 @@ public class ApplianceAgent extends AbstractAgent {
     private int currentlyConsuming() {
         try {
             return applianceProfile.getCurrentConsumptionValue(dayOfWeek, hourOfDay);
-        } catch (EvaluationException e) {
+        }
+            catch (Exception e) {
             e.printStackTrace();
             return 0;
         }
