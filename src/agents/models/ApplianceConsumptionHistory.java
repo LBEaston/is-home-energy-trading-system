@@ -9,6 +9,6 @@ public class ApplianceConsumptionHistory {
     public Vector<ApplianceConsumption> history;
 
     public ApplianceConsumptionHistory() {
-        history = new Vector();
+        history = new Vector<ApplianceConsumption>();
     }
 }

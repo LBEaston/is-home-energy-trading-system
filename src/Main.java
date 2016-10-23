@@ -73,7 +73,7 @@ public class Main {
     }
 
     private static Vector<ApplianceProfile> getApplianceAgentProfiles() {
-        Vector<ApplianceProfile> applianceProfiles = new Vector();
+        Vector<ApplianceProfile> applianceProfiles = new Vector<ApplianceProfile>();
 
         // Solar Panel 1
         applianceProfiles.add(new ApplianceProfile("SolarPanel1", new DayUsageProfile[] {

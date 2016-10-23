@@ -1,6 +1,5 @@
 package ui;
 
-import agents.interfaces.Observable;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 import ui.containers.StatusContainerBase;
@@ -8,14 +7,14 @@ import ui.interfaces.Informable;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.SoftBevelBorder;
 import java.awt.*;
 
 /**
  * Created by fegwin on 27/09/2016.
  */
 public abstract class AbstractAgentUiElement extends JPanel implements Informable {
-    protected AgentController agentController;
+	private static final long serialVersionUID = 1L;
+	protected AgentController agentController;
     protected boolean showDateAndTime;
 
     private JLabel currentHourOfDay;

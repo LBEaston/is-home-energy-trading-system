@@ -24,7 +24,7 @@ public class Proposal {
     }
 
     public static Vector<Proposal> fromCompoundString(String compundProposalString) {
-        Vector<Proposal> proposals = new Vector();
+        Vector<Proposal> proposals = new Vector<Proposal>();
         String[] proposalStrings = compundProposalString.split("\\|");
 
         for(String pString : proposalStrings) {

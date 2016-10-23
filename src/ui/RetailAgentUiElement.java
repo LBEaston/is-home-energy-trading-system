@@ -9,6 +9,7 @@ import ui.containers.StatusContainerBase;
  * Created by fegwin on 27/09/2016.
  */
 public class RetailAgentUiElement extends AbstractAgentUiElement {
+	private static final long serialVersionUID = 1L;
     public RetailAgentUiElement(AgentController agentController) throws StaleProxyException {
         super(agentController, false);
     }

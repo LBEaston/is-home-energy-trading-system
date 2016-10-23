@@ -12,6 +12,7 @@ import java.awt.*;
  * Created by fegwin on 27/09/2016.
  */
 public class ApplianceAgentUiElement extends AbstractAgentUiElement {
+	private static final long serialVersionUID = 1L;
     private JLabel currentlyConsuming;
 
     public ApplianceAgentUiElement(AgentController agentController) throws StaleProxyException {

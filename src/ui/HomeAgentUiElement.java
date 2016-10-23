@@ -11,6 +11,7 @@ import javax.swing.*;
  * Created by fegwin on 27/09/2016.
  */
 public class HomeAgentUiElement extends AbstractAgentUiElement {
+	private static final long serialVersionUID = 1L;
     private JLabel currentNetConsumption;
     private JLabel previousNetConsumption;
 

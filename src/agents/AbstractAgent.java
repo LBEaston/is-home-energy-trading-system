@@ -14,7 +14,9 @@ import java.util.Vector;
  * Created by fegwin on 15/09/2016.
  */
 public abstract class AbstractAgent extends Agent implements Observable, Destroyable {
-    static final int APP_TICK = 1000;
+	private static final long serialVersionUID = 1L;
+
+	static final int APP_TICK = 1000;
 
     private Vector<Informable> statusEventListeners;
 
@@ -25,7 +27,7 @@ public abstract class AbstractAgent extends Agent implements Observable, Destroy
 
     public void addStatusEventListener(Informable listener) {
         if(statusEventListeners == null) {
-            statusEventListeners = new Vector();
+            statusEventListeners = new Vector<Informable>();
         }
 
         statusEventListeners.add(listener);
@@ -62,7 +64,12 @@ public abstract class AbstractAgent extends Agent implements Observable, Destroy
 
     private void configureAppTicker() {
         addBehaviour(new TickerBehaviour(this, APP_TICK) {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
             protected void onTick() {
                 appTicksElapsed++;
                 updateDayAndHour();

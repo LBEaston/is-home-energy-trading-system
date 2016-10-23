@@ -17,7 +17,9 @@ import java.util.Vector;
  * Created by fegwin on 7/09/2016.
  */
 public class RetailerAgent extends AbstractAgent {
-    private boolean isOffPeak;
+	private static final long serialVersionUID = 1L;
+
+	private boolean isOffPeak;
 
     private int offPeakTickCount;
     private int peakTickCount;
@@ -71,7 +73,8 @@ public class RetailerAgent extends AbstractAgent {
                 MessageTemplate.MatchPerformative(ACLMessage.CFP) );
 
         return new ContractNetResponder(this, template) {
-            @Override
+			private static final long serialVersionUID = 1L;
+			@Override
             protected ACLMessage handleCfp(ACLMessage cfp) throws NotUnderstoodException, RefuseException {
                 ACLMessage propose = cfp.createReply();
                 propose.setPerformative(ACLMessage.PROPOSE);
@@ -112,7 +115,7 @@ public class RetailerAgent extends AbstractAgent {
     }
 
     private Vector<Proposal> getProposalStrategies() {
-        Vector<Proposal> proposalStrategies = new Vector();
+        Vector<Proposal> proposalStrategies = new Vector<Proposal>();
 
         // Simple proposal strategy
         // Any complex logic on variables rates/lock in periods should go here

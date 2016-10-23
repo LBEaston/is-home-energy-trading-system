@@ -13,7 +13,8 @@ import java.security.InvalidParameterException;
  * Created by fegwin on 7/09/2016.
  */
 public class ApplianceAgent extends AbstractAgent {
-    protected ApplianceProfile applianceProfile = null;
+	private static final long serialVersionUID = 1L;
+	protected ApplianceProfile applianceProfile = null;
     protected String homeAgentName = null;
 
     @Override
@@ -49,7 +50,9 @@ public class ApplianceAgent extends AbstractAgent {
 
     protected OneShotBehaviour getInformBehaviour() {
         return new OneShotBehaviour() {
-            @Override
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public void action() {
                 informCurrentlyConsuming();
             }
@@ -58,6 +61,7 @@ public class ApplianceAgent extends AbstractAgent {
 
     protected OneShotBehaviour getSayHelloBehaviour() {
         return new OneShotBehaviour() {
+        	private static final long serialVersionUID = 1L;
             @Override
             public void action() {
                 sayHello();

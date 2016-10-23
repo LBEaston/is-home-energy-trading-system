@@ -23,6 +23,7 @@ import java.util.*
  * Created by fegwin on 7/09/2016.
  */
 public class HomeAgent extends AbstractAgent {
+	private static final long serialVersionUID = 1L;
     // Internal State Variables
     private Vector<String> retailers;
     private HashMap<String, ApplianceConsumptionHistory> applianceConsumptionHistory;
@@ -94,6 +95,7 @@ public class HomeAgent extends AbstractAgent {
         inTheMiddleOfANegotiation = true;
 
         return new ContractNetInitiator(this, cfpMessage) {
+        	private static final long serialVersionUID = 1L;
             protected void handlePropose(ACLMessage propose, Vector v) { }
             protected void handleRefuse(ACLMessage refuse) { }
             protected void handleFailure(ACLMessage failure) { }
@@ -102,7 +104,7 @@ public class HomeAgent extends AbstractAgent {
                 Enumeration e = responses.elements();
 
                 // Get a handle not all proposals
-                Vector<ACLMessage> proposalMessages = new Vector();
+                Vector<ACLMessage> proposalMessages = new Vector<ACLMessage>();
                 while (e.hasMoreElements()) {
                     ACLMessage msg = (ACLMessage) e.nextElement();
                     if (msg.getPerformative() == ACLMessage.PROPOSE) {
@@ -111,7 +113,7 @@ public class HomeAgent extends AbstractAgent {
                 }
 
                 // Extract Contract proposals from messages
-                Vector<Contract> proposedContracts = new Vector();
+                Vector<Contract> proposedContracts = new Vector<Contract>();
                 for(ACLMessage msg : proposalMessages)
                 {
                     String compoundProposalString = msg.getContent();
@@ -184,7 +186,9 @@ public class HomeAgent extends AbstractAgent {
 
     private Behaviour getReceiveHelloMessagesBehaviour() {
         return new CyclicBehaviour(this) {
-            public void action() {
+			private static final long serialVersionUID = 1L;
+
+			public void action() {
                 MessageTemplate template = MessageTemplate.and(
                         MessageTemplate.MatchContent("hello"),
                         MessageTemplate.MatchPerformative(ACLMessage.INFORM) );
@@ -202,6 +206,7 @@ public class HomeAgent extends AbstractAgent {
 
     private Behaviour getReceiveMessagesBehaviour(AID sender) {
         return new CyclicBehaviour(this) {
+        	private static final long serialVersionUID = 1L;
             public void action() {
                 MessageTemplate template = MessageTemplate.and(
                         MessageTemplate.MatchSender(sender),
@@ -221,6 +226,7 @@ public class HomeAgent extends AbstractAgent {
 
     private Behaviour getRecalculateAndUpdateBehaviour() {
         return new OneShotBehaviour() {
+        	private static final long serialVersionUID = 1L;
             @Override
             public void action() {
                 try {
@@ -242,11 +248,11 @@ public class HomeAgent extends AbstractAgent {
     }
 
     public int getCurrentNetConsumption() {
-        Vector<ApplianceConsumption> consumers = new Vector();
+        Vector<ApplianceConsumption> consumers = new Vector<ApplianceConsumption>();
 
-        Iterator it = currentApplianceConsumption.entrySet().iterator();
+        Iterator<Map.Entry<String, ApplianceConsumption>> it = currentApplianceConsumption.entrySet().iterator();
         while(it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
+            Map.Entry<String, ApplianceConsumption> pair = (Map.Entry<String, ApplianceConsumption>) it.next();
 
             ApplianceConsumption applianceConsumption = (ApplianceConsumption) pair.getValue();
             consumers.add(applianceConsumption);
@@ -289,9 +295,9 @@ public class HomeAgent extends AbstractAgent {
     }
 
     private void updateApplianceConsumptionHistory() {
-        Iterator it = currentApplianceConsumption.entrySet().iterator();
+        Iterator<Map.Entry<String, ApplianceConsumption>> it = currentApplianceConsumption.entrySet().iterator();
         while(it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
+        	Map.Entry<String, ApplianceConsumption> pair = (Map.Entry<String, ApplianceConsumption>) it.next();
 
             String agentIdentifier = (String) pair.getKey();
             ApplianceConsumption applianceConsumption = (ApplianceConsumption) pair.getValue();
