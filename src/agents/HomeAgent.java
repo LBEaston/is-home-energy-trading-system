@@ -2,7 +2,6 @@ package agents;
 
 import agents.models.ApplianceConsumption;
 import agents.models.ApplianceConsumptionHistory;
-import agents.models.Contract;
 import agents.models.Proposal;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -30,7 +29,7 @@ public class HomeAgent extends AbstractAgent {
 
     private HashMap<String, ApplianceConsumption> currentApplianceConsumption;
 
-    private Contract currentEnergyContract = null;
+    private Proposal currentEnergyContract = null;
     private int ticksTillNextNegotiation = 0;
 
     private boolean inTheMiddleOfANegotiation = false;
@@ -66,12 +65,12 @@ public class HomeAgent extends AbstractAgent {
 
     @Override
     protected void appTickElapsed() {
-//        // Negotiate/Predict all that jazz
-//        if(ticksTillNextNegotiation <= 0) {
-//            negotiateWithRetailers();
-//        }
-//
-//        ticksTillNextNegotiation--;
+        // Negotiate/Predict all that jazz
+        if(ticksTillNextNegotiation <= 0) {
+            negotiateWithRetailers();
+        }
+
+        ticksTillNextNegotiation--;
         addBehaviour(getRecalculateAndUpdateBehaviour());
     }
 
@@ -113,7 +112,10 @@ public class HomeAgent extends AbstractAgent {
                 }
 
                 // Extract Contract proposals from messages
-                Vector<Contract> proposedContracts = new Vector<Contract>();
+                Proposal bestProposal = null;
+                double bestUtility = 0;
+                ACLMessage bestMessage = null;
+                Vector<Proposal> proposedContracts = new Vector<Proposal>();
                 for(ACLMessage msg : proposalMessages)
                 {
                     String compoundProposalString = msg.getContent();
@@ -121,28 +123,16 @@ public class HomeAgent extends AbstractAgent {
 
                     for(Proposal p : proposalsFromAgent)
                     {
-                        Contract c = new Contract(msg, p);
-
-                        proposedContracts.add(c);
-                    }
-                }
-
-                // Find proposal with lowest predicted cost/hour
-                Contract bestProposal = null;
-                double bestUtility = 0;
-                for(Contract c : proposedContracts)
-                {
-                    double currentUtility = getUtilityOfContract(c);
-                    if(bestProposal == null || currentUtility < bestUtility)
-                    {
-                        bestProposal = c;
+                    	double currentUtility = getUtilityOfContract(p);
+                    	bestProposal = p;
                         bestUtility = currentUtility;
+                        proposedContracts.add(p);
+                        bestMessage = msg;
                     }
                 }
 
                 // Accept best proposal
-                ACLMessage bestMsg = bestProposal.associatedMessage;
-                ACLMessage reply = bestMsg.createReply();
+                ACLMessage reply = bestMessage.createReply();
 
                 reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
                 reply.setContent(bestProposal.toString());
@@ -152,34 +142,43 @@ public class HomeAgent extends AbstractAgent {
                 proposedContracts.remove(bestProposal);
 
                 // Reject remaining elements
-                for(Contract contract : proposedContracts)
+                for(ACLMessage msg : proposalMessages)
                 {
-                    ACLMessage rejectReply = contract.associatedMessage.createReply();
+                	if (msg == bestMessage) continue;
+                    ACLMessage rejectReply = msg.createReply();
                     rejectReply.setPerformative(ACLMessage.REJECT_PROPOSAL);
                     acceptances.addElement(rejectReply);
                 }
                 inTheMiddleOfANegotiation = false;
             }
             protected void handleInform(ACLMessage inform) {
-                currentEnergyContract = new Contract(inform, Proposal.fromString(inform.getContent()));
+                currentEnergyContract = Proposal.fromString(inform.getContent());
                 ticksTillNextNegotiation = currentEnergyContract.duration;
             }
         };
     }
     
-    private double getUtilityOfContract(Contract c) {
+    private double getUtilityOfContract(Proposal c) {
     	double result = 0;
     	double predicted_kwh = predictKWHForNextNHours(c.duration);
     	
-    	if (predicted_kwh >= 0.0)
+    	double buypriceContribution = -1.0;
+		double sellpriceContribution = 0.1;
+		
+    	if (predicted_kwh > 0.0)
     	{
     		// predicted going to consume more
-    		
+    		buypriceContribution = -1.0;
+    		sellpriceContribution = 0.1;
     	}
     	else
     	{
     		// predicted going to produced more
+    		buypriceContribution = -0.1;
+    		sellpriceContribution = 1.0;
     	}
+    	
+    	result = (buypriceContribution*c.buyingPrice + sellpriceContribution*c.sellingPrice)/Math.sqrt((double)c.duration);
     	
     	return result;
     }

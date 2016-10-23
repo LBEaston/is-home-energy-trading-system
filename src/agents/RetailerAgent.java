@@ -133,6 +133,11 @@ public class RetailerAgent extends AbstractAgent {
 
         return proposalStrategies;
     }
+    
+    private Proposal concedeProposal(Proposal p)
+    {
+		return p;
+    }
 
     private void evaluatePeakOffPeakPeriod() {
         int ticksThatShouldHaveElapsed;
