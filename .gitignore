@@ -5,3 +5,6 @@ MTPs-Main-Container.txt
 homeEnergy.iml
 out/
 /bin/
+*.classpath
+.project
+.settings/org.eclipse.jdt.core.prefs
