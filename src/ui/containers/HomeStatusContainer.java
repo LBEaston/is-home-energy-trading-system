@@ -1,5 +1,7 @@
 package ui.containers;
 
+import agents.models.Proposal;
+
 import java.time.DayOfWeek;
 
 /**
@@ -7,10 +9,12 @@ import java.time.DayOfWeek;
  */
 public class HomeStatusContainer extends StatusContainerBase {
     public int currentNetConsumption;
+    public Proposal currentEnergyContract;
 
-    public HomeStatusContainer(int currentNetConsumption, int hourOfDay, DayOfWeek dayOfWeek) {
+    public HomeStatusContainer(int currentNetConsumption, int hourOfDay, DayOfWeek dayOfWeek, Proposal contract) {
         super(hourOfDay, dayOfWeek);
 
         this.currentNetConsumption = currentNetConsumption;
+        this.currentEnergyContract = contract;
     }
 }

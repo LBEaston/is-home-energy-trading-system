@@ -9,6 +9,7 @@ import jade.domain.FIPANames;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.ContractNetResponder;
+import ui.containers.RetailerStatusContainer;
 
 import java.security.InvalidParameterException;
 import java.util.Vector;
@@ -60,6 +61,9 @@ public class RetailerAgent extends AbstractAgent {
     @Override
     public void appTickElapsed() {
         evaluatePeakOffPeakPeriod();
+
+        Vector currentProposals = getProposalStrategies();
+        fireStatusChangedEvent(new RetailerStatusContainer(hourOfDay, dayOfWeek, currentProposals));
     }
 
     public void configureBehaviours() {
@@ -127,7 +131,8 @@ public class RetailerAgent extends AbstractAgent {
             appTicksRemainingInCurrentPeakOffPeakPeriod = peakTickCount - currentPeakOffPeakTickCount;
         }
 
-        proposalStrategies.add(new Proposal(isOffPeak ? offPeakSellPrice : peakSellPrice,
+        proposalStrategies.add(new Proposal(this.getLocalName(),
+                isOffPeak ? offPeakSellPrice : peakSellPrice,
                 isOffPeak ? offPeakBuyPrice : peakBuyPrice,
                 appTicksRemainingInCurrentPeakOffPeakPeriod));
 

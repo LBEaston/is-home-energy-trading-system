@@ -204,7 +204,7 @@ public class HomeAgent extends AbstractAgent {
             public void action() {
                 try {
                     Thread.sleep(250);
-                    fireStatusChangedEvent(new HomeStatusContainer(getCurrentNetConsumption(), hourOfDay, dayOfWeek));
+                    fireStatusChangedEvent(new HomeStatusContainer(getCurrentNetConsumption(), hourOfDay, dayOfWeek, currentEnergyContract));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

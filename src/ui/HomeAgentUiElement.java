@@ -19,7 +19,6 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
 	private static final long serialVersionUID = 1L;
     private JLabel currentNetConsumption;
     private JLabel previousNetConsumption;
-
     private JLabel currentContractDetails;
     
     private GraphPanel graph;
@@ -30,10 +29,13 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
 
         currentNetConsumption = new JLabel();
         previousNetConsumption = new JLabel();
+        currentContractDetails = new JLabel();
+
 
         this.add(currentNetConsumption);
         this.add(previousNetConsumption);
-        
+        this.add(currentContractDetails);
+
         graph = new GraphPanel(graphScores);
         graph.setPreferredSize(new Dimension(1000, 200));
         JFrame homeUsageFrame = new JFrame("HomeUsageGraph");
@@ -52,7 +54,14 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         String previous = currentNetConsumption.getText();
         currentNetConsumption.setText("Current net: " + status.currentNetConsumption + " kwH");
         previousNetConsumption.setText(previous.replace("Current", "Previous"));
-        
+
+        if(status.currentEnergyContract != null) {
+            currentContractDetails.setText(String.format("Contract with %s. Buying@%s. Selling@%s.",
+                    status.currentEnergyContract.seller,
+                    status.currentEnergyContract.buyingPrice,
+                    status.currentEnergyContract.sellingPrice));
+        }
+
         graphScores[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.currentNetConsumption);
         graph.setScores(graphScores);
     }
