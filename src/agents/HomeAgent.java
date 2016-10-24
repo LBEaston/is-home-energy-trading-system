@@ -217,7 +217,7 @@ public class HomeAgent extends AbstractAgent {
     	double[] historyX = new double[12], historyY = new double[12];
     	LinearFunction predictedLine = getLinearRegression(historyX, historyY);
     	
-    	double result = predictedLine.definiteIntegral(historyX[historyX.length], historyX[historyX.length] + n);
+    	double result = predictedLine.definiteIntegral(historyX[historyX.length-1], historyX[historyX.length-1] + n);
 
     	return result;
     }

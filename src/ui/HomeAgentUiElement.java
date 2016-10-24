@@ -5,6 +5,11 @@ import jade.wrapper.StaleProxyException;
 import ui.containers.HomeStatusContainer;
 import ui.containers.StatusContainerBase;
 
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import javax.swing.*;
 
 /**
@@ -16,7 +21,10 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
     private JLabel previousNetConsumption;
 
     private JLabel currentContractDetails;
-
+    
+    private GraphPanel graph;
+    private double[] graphScores = new double[24*7];
+    
     public HomeAgentUiElement(AgentController agentController) throws StaleProxyException {
         super(agentController, true);
 
@@ -25,6 +33,15 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
 
         this.add(currentNetConsumption);
         this.add(previousNetConsumption);
+        
+        graph = new GraphPanel(graphScores);
+        graph.setPreferredSize(new Dimension(1000, 200));
+        JFrame homeUsageFrame = new JFrame("HomeUsageGraph");
+        homeUsageFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        homeUsageFrame.getContentPane().add(graph);
+        homeUsageFrame.pack();
+        homeUsageFrame.setLocationRelativeTo(null);
+        homeUsageFrame.setVisible(true);
     }
 
     @Override
@@ -35,5 +52,8 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         String previous = currentNetConsumption.getText();
         currentNetConsumption.setText("Current net: " + status.currentNetConsumption + " kwH");
         previousNetConsumption.setText(previous.replace("Current", "Previous"));
+        
+        graphScores[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.currentNetConsumption);
+        graph.setScores(graphScores);
     }
 }

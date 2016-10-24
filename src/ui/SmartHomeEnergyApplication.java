@@ -7,6 +7,7 @@ import jade.wrapper.StaleProxyException;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by fegwin on 7/09/2016.
@@ -37,7 +38,7 @@ public class SmartHomeEnergyApplication implements Runnable {
         } catch (UnableToGetAgentInterfaceException e) {
             e.printStackTrace();
         }
-
+        
         rootContainer.add(rootPanel);
         rootContainer.pack();
         rootContainer.setVisible(true);
