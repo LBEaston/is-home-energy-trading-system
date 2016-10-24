@@ -76,7 +76,7 @@ public class Main {
     {
     	Vector<SampleUsagePoint> result = new Vector<SampleUsagePoint>();
 	    double period = (endTime - startTime);
-	    for(int i = startTime; i < endTime; ++i)
+	    for(int i = startTime; i <= endTime; ++i)
 	    {
 	    	double value = peak * Math.sin((Math.PI/period) * (double)(i-startTime));
 	    	result.add(new SampleUsagePoint(i, i+1, value));
