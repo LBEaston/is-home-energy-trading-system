@@ -7,8 +7,9 @@ public class ApplianceConsumption {
     public int hourOfDay;
     public DayOfWeek dayOfWeek;
 
-    public ApplianceConsumption(double consuming2, int hourOfDay, DayOfWeek dayOfWeek) {
-        this.consuming = consuming2;
+    // What's up with consuming2 ??? -Lachlan
+    // public ApplianceConsumption(double consuming2, int hourOfDay, DayOfWeek dayOfWeek) {
+    //     this.consuming = consuming2;
     public ApplianceConsumption(double consuming, int hourOfDay, DayOfWeek dayOfWeek) {
         this.consuming = consuming;
         this.hourOfDay = hourOfDay;

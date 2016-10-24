@@ -83,42 +83,25 @@ public abstract class AbstractAgent extends Agent implements Observable, Destroy
 
         if(hourOfDay > 23 ) {
             hourOfDay = 0;
-            incrementDayOfWeek();
             dayOfWeek = incrementDayOfWeek(dayOfWeek);
         }
     }
 
-    private void incrementDayOfWeek() {
-        switch (dayOfWeek) {
     protected static DayOfWeek incrementDayOfWeek(DayOfWeek dow) {
         switch (dow) {
             case MONDAY:
-                dayOfWeek = DayOfWeek.TUESDAY;
-                break;
                 return DayOfWeek.TUESDAY;
             case TUESDAY:
-                dayOfWeek = DayOfWeek.WEDNESDAY;
-                break;
                 return DayOfWeek.WEDNESDAY;
             case WEDNESDAY:
-                dayOfWeek = DayOfWeek.THURSDAY;
-                break;
                 return DayOfWeek.THURSDAY;
             case THURSDAY:
-                dayOfWeek = DayOfWeek.FRIDAY;
-                break;
                 return DayOfWeek.FRIDAY;
             case FRIDAY:
-                dayOfWeek = DayOfWeek.SATURDAY;
-                break;
                 return DayOfWeek.SATURDAY;
             case SATURDAY:
-                dayOfWeek = DayOfWeek.SUNDAY;
-                break;
                 return DayOfWeek.SUNDAY;
             case SUNDAY:
-                dayOfWeek = DayOfWeek.MONDAY;
-                break;
                 return DayOfWeek.MONDAY;
         }
 

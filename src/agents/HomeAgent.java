@@ -226,14 +226,10 @@ public class HomeAgent extends AbstractAgent {
         double historicPrediction = doHistoricPrediction(n);
         double linearPrediction = doLinearPrediction(n);
 
-    	return result;
         if(Double.isNaN(historicPrediction)) return linearPrediction;
 
         return linearPrediction;
     }
-    
-    private class LinearFunction
-    {
 
     private double doHistoricPrediction(int duration) {
         Vector<InstantDescriptor> instancesForTheNextNHoursWorthOfPredictions = getHourOfDayInstancesForNextNHours(duration);
@@ -321,8 +317,6 @@ public class HomeAgent extends AbstractAgent {
     }
     
     /* NOTE: Code modified form of: http://introcs.cs.princeton.edu/java/97data/LinearRegression.java.html */
-    private LinearFunction getLinearRegression(double[] x, double[] y)
-    {
     private LinearFunction getLinearRegression(double[] x, double[] y) {
         int n = 0;
 
@@ -375,7 +369,7 @@ public class HomeAgent extends AbstractAgent {
     }
 
 
-    public int getCurrentNetConsumption() {
+    public double getCurrentNetConsumption() {
         Vector<ApplianceConsumption> consumers = new Vector<ApplianceConsumption>();
 
         Iterator<Map.Entry<String, ApplianceConsumption>> it = currentApplianceConsumption.entrySet().iterator();
@@ -389,8 +383,8 @@ public class HomeAgent extends AbstractAgent {
         return calculateApplianceConsumption(consumers);
     }
 
-    private int calculateApplianceConsumption(Vector<ApplianceConsumption> consumers) {
-        int netConsumtion = 0;
+    private double calculateApplianceConsumption(Vector<ApplianceConsumption> consumers) {
+        double netConsumtion = 0;
 
         for(ApplianceConsumption ac : consumers) {
             netConsumtion += ac.consuming;
