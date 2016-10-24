@@ -2,6 +2,7 @@ package agents;
 
 import agents.models.ApplianceConsumption;
 import agents.models.ApplianceConsumptionHistory;
+import agents.models.InstantDescriptor;
 import agents.models.Proposal;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
@@ -19,6 +20,9 @@ import java.util.Vector;
 import java.util.*
 
 ;/**
+;
+
+/**
  * Created by fegwin on 7/09/2016.
  */
 public class HomeAgent extends AbstractAgent {
@@ -204,6 +208,7 @@ public class HomeAgent extends AbstractAgent {
             public void action() {
                 try {
                     Thread.sleep(250);
+                    updateApplianceConsumptionHistory();
                     fireStatusChangedEvent(new HomeStatusContainer(getCurrentNetConsumption(), hourOfDay, dayOfWeek, currentEnergyContract));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -218,12 +223,90 @@ public class HomeAgent extends AbstractAgent {
     	LinearFunction predictedLine = getLinearRegression(historyX, historyY);
     	
     	double result = predictedLine.definiteIntegral(historyX[historyX.length-1], historyX[historyX.length-1] + n);
+        double historicPrediction = doHistoricPrediction(n);
+        double linearPrediction = doLinearPrediction(n);
 
     	return result;
+        if(Double.isNaN(historicPrediction)) return linearPrediction;
+
+        return linearPrediction;
     }
     
     private class LinearFunction
     {
+
+    private double doHistoricPrediction(int duration) {
+        Vector<InstantDescriptor> instancesForTheNextNHoursWorthOfPredictions = getHourOfDayInstancesForNextNHours(duration);
+
+        Vector<Double> predictedConsumptionsForTheNextNHours = new Vector<Double>();
+
+        for(InstantDescriptor instantDescriptor : instancesForTheNextNHoursWorthOfPredictions) {
+            double historicalAverageForThisHourDay = getHistoricalConsumptionTotalByInstantDescriptor(instantDescriptor);
+            predictedConsumptionsForTheNextNHours.add(historicalAverageForThisHourDay);
+        }
+
+        double sum = 0;
+        for(Double val : predictedConsumptionsForTheNextNHours) {
+            sum += val;
+        }
+
+        return sum;
+    }
+
+    private double getHistoricalConsumptionTotalByInstantDescriptor(InstantDescriptor instantDescriptor) {
+        Vector<Double> dataPoints = new Vector();
+
+        Iterator<Map.Entry<String, ApplianceConsumptionHistory>> it = applianceConsumptionHistory.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<String, ApplianceConsumptionHistory> pair = it.next();
+
+            ApplianceConsumptionHistory history = pair.getValue();
+
+            for(ApplianceConsumption ac : history.history) {
+                if(ac.hourOfDay == instantDescriptor.hourOfDay && ac.dayOfWeek == instantDescriptor.dayOfWeek) {
+                    dataPoints.add(ac.consuming);
+                }
+            }
+        }
+
+        double sum = 0;
+        for(Double dataPoint : dataPoints) {
+            sum += dataPoint;
+        }
+
+        return sum/(dataPoints.size());
+    }
+
+    private Vector<InstantDescriptor> getHourOfDayInstancesForNextNHours(int duration) {
+        InstantDescriptor current = new InstantDescriptor(dayOfWeek, hourOfDay);
+        Vector<InstantDescriptor> retVal = new Vector<>();
+
+        retVal.add(new InstantDescriptor(current.dayOfWeek, current.hourOfDay));
+
+        for(int i = 0; i < duration; i++) {
+            current.hourOfDay++;
+
+            if(current.hourOfDay > 23 ) {
+                current.hourOfDay = 0;
+                current.dayOfWeek = incrementDayOfWeek(dayOfWeek);
+            }
+
+            retVal.add(new InstantDescriptor(current.dayOfWeek, current.hourOfDay));
+        }
+
+        return retVal;
+    }
+
+    private double doLinearPrediction(int n) {
+        double[] historyX = new double[12], historyY = new double[12];
+        LinearFunction predictedLine = getLinearRegression(historyX, historyY);
+
+        double result = predictedLine.definiteIntegral(historyX[historyX.length-1], historyX[historyX.length-1] + n);
+
+        return result;
+    }
+
+    private class LinearFunction {
     	private double _a, _b;
     	public LinearFunction(double a, double b)
     	{
@@ -240,6 +323,7 @@ public class HomeAgent extends AbstractAgent {
     /* NOTE: Code modified form of: http://introcs.cs.princeton.edu/java/97data/LinearRegression.java.html */
     private LinearFunction getLinearRegression(double[] x, double[] y)
     {
+    private LinearFunction getLinearRegression(double[] x, double[] y) {
         int n = 0;
 
         // first pass: read in data, compute xbar and ybar
@@ -340,6 +424,7 @@ public class HomeAgent extends AbstractAgent {
 
     private void updateApplianceConsumptionHistory() {
         Iterator<Map.Entry<String, ApplianceConsumption>> it = currentApplianceConsumption.entrySet().iterator();
+
         while(it.hasNext()) {
         	Map.Entry<String, ApplianceConsumption> pair = (Map.Entry<String, ApplianceConsumption>) it.next();
 

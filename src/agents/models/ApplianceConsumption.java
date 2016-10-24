@@ -9,6 +9,8 @@ public class ApplianceConsumption {
 
     public ApplianceConsumption(double consuming2, int hourOfDay, DayOfWeek dayOfWeek) {
         this.consuming = consuming2;
+    public ApplianceConsumption(double consuming, int hourOfDay, DayOfWeek dayOfWeek) {
+        this.consuming = consuming;
         this.hourOfDay = hourOfDay;
         this.dayOfWeek = dayOfWeek;
     }
