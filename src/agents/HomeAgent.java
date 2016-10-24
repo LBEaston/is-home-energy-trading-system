@@ -115,7 +115,6 @@ public class HomeAgent extends AbstractAgent {
                 Proposal bestProposal = null;
                 double bestUtility = 0;
                 ACLMessage bestMessage = null;
-                Vector<Proposal> proposedContracts = new Vector<Proposal>();
                 for(ACLMessage msg : proposalMessages)
                 {
                     String compoundProposalString = msg.getContent();
@@ -124,10 +123,12 @@ public class HomeAgent extends AbstractAgent {
                     for(Proposal p : proposalsFromAgent)
                     {
                     	double currentUtility = getUtilityOfContract(p);
-                    	bestProposal = p;
-                        bestUtility = currentUtility;
-                        proposedContracts.add(p);
-                        bestMessage = msg;
+                    	if (currentUtility > bestUtility)
+                    	{
+	                    	bestProposal = p;
+	                        bestUtility = currentUtility;
+	                        bestMessage = msg;
+                    	}
                     }
                 }
 
@@ -138,8 +139,6 @@ public class HomeAgent extends AbstractAgent {
                 reply.setContent(bestProposal.toString());
 
                 acceptances.addElement(reply);
-
-                proposedContracts.remove(bestProposal);
 
                 // Reject remaining elements
                 for(ACLMessage msg : proposalMessages)
@@ -158,31 +157,6 @@ public class HomeAgent extends AbstractAgent {
         };
     }
     
-    private double getUtilityOfContract(Proposal c) {
-    	double result = 0;
-    	double predicted_kwh = predictKWHForNextNHours(c.duration);
-    	
-    	double buypriceContribution = -1.0;
-		double sellpriceContribution = 0.1;
-		
-    	if (predicted_kwh > 0.0)
-    	{
-    		// predicted going to consume more
-    		buypriceContribution = -1.0;
-    		sellpriceContribution = 0.1;
-    	}
-    	else
-    	{
-    		// predicted going to produced more
-    		buypriceContribution = -0.1;
-    		sellpriceContribution = 1.0;
-    	}
-    	
-    	result = (buypriceContribution*c.buyingPrice + sellpriceContribution*c.sellingPrice)/Math.sqrt((double)c.duration);
-    	
-    	return result;
-    }
-
     private Behaviour getReceiveHelloMessagesBehaviour() {
         return new CyclicBehaviour(this) {
 			private static final long serialVersionUID = 1L;
@@ -239,12 +213,83 @@ public class HomeAgent extends AbstractAgent {
     }
 
     /** Prediction Logic **/
-    private float predictKWHForNextNHours(float n) {
-    	/* TODO(Lachlan 28-9-16) Use linear regression/other predicition techniques */
-    	float result = 0;
+    private double predictKWHForNextNHours(int n) {
+    	double[] historyX = new double[12], historyY = new double[12];
+    	LinearFunction predictedLine = getLinearRegression(historyX, historyY);
+    	
+    	double result = predictedLine.definiteIntegral(historyX[historyX.length], historyX[historyX.length] + n);
 
     	return result;
     }
+    
+    private class LinearFunction
+    {
+    	private double _a, _b;
+    	public LinearFunction(double a, double b)
+    	{
+    		_a = a;
+    		_b = b;
+    	}
+    	
+    	public double definiteIntegral(double low, double high)
+    	{    		
+    		return (0.5*_a*high*high + _b*high) - (0.5*_a*low*low + _b*low);
+    	}
+    }
+    
+    /* NOTE: Code modified form of: http://introcs.cs.princeton.edu/java/97data/LinearRegression.java.html */
+    private LinearFunction getLinearRegression(double[] x, double[] y)
+    {
+        int n = 0;
+
+        // first pass: read in data, compute xbar and ybar
+        double sumx = 0.0, sumy = 0.0;
+        for (int i = 0; i < x.length; ++i)
+        {
+        	sumx  += x[n];
+            sumy  += y[n];
+            n++;
+        }
+        double xbar = sumx / n;
+        double ybar = sumy / n;
+
+        // second pass: compute summary statistics
+        double xxbar = 0.0, xybar = 0.0;
+        for (int i = 0; i < n; i++) {
+            xxbar += (x[i] - xbar) * (x[i] - xbar);
+            xybar += (x[i] - xbar) * (y[i] - ybar);
+        }
+        double a = xybar / xxbar;
+        double b = ybar - a * xbar;
+        
+        return new LinearFunction(a, b);
+    }
+    
+    private double getUtilityOfContract(Proposal c) {
+    	double result = 0;
+    	double predicted_kwh = predictKWHForNextNHours(c.duration);
+    	
+    	double buypriceContribution = -1.0;
+		double sellpriceContribution = 0.1;
+		
+    	if (predicted_kwh > 0.0)
+    	{
+    		// predicted going to consume more
+    		buypriceContribution = -1.0; // Want buy price to be as low as possible
+    		sellpriceContribution = 0.1; // Prefer sell price to be higher in case prediction was wrong
+    	}
+    	else
+    	{
+    		// predicted going to produced more
+    		buypriceContribution = -0.1; // Care less about buy price
+    		sellpriceContribution = 1.0; // Want 
+    	}
+    	
+    	result = (buypriceContribution*c.buyingPrice + sellpriceContribution*c.sellingPrice)/Math.sqrt((double)c.duration);
+    	
+    	return result;
+    }
+
 
     public int getCurrentNetConsumption() {
         Vector<ApplianceConsumption> consumers = new Vector<ApplianceConsumption>();
