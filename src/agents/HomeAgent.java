@@ -317,7 +317,7 @@ public class HomeAgent extends AbstractAgent {
 
     /** Appliance Interaction Handlers **/
     private void handleApplianceAgentConsumptionInform(AID aid, String msg) {
-        float kwh = Integer.parseInt( msg.replace("consuming=", "") );
+        double kwh = Double.parseDouble( msg.replace("consuming=", "") );
 
         // Update the current consumption knowledge of this appliance
         ApplianceConsumption thisAppliance = currentApplianceConsumption.get(aid.getLocalName());

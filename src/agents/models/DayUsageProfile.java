@@ -8,35 +8,35 @@ import java.time.DayOfWeek;
  */
 public class DayUsageProfile {
     public DayOfWeek dayOfWeek;
-    public int peakUsage; // kwH
-    public int offPeakUsage; // kwH
+    public double offPeakUsage; // kwH
 
-    public PeakUsagePeriod[] peakUsagePeriods; // hours between which peak runs (see validation)
+    public SampleUsagePoint[] sampleUsagePoints; // hours between which peak runs (see validation)
 
-    public DayUsageProfile(DayOfWeek dayOfWeek, int peakUsage, int offPeakUsage, PeakUsagePeriod[] peakUsagePeriods) {
+    public DayUsageProfile(DayOfWeek dayOfWeek, double offPeakUsage, SampleUsagePoint[] sampleUsagePoints) {
         this.dayOfWeek = dayOfWeek;
-        this.peakUsage = peakUsage;
         this.offPeakUsage = offPeakUsage;
 
-        this.peakUsagePeriods = peakUsagePeriods;
+        this.sampleUsagePoints = sampleUsagePoints;
 
         if(!isValid()) throw new InvalidParameterException("Invalid DayUsageProfile params");
     }
 
     private boolean isValid() {
-        if(peakUsagePeriods == null) return false;
+        if(sampleUsagePoints == null) return false;
 
         return true;
     }
 
-    public int getCurrentConsumptionValue(int hourOfDay) {
-        // are we in peak period?
-        boolean isInPeak = false;
+    public double getCurrentConsumptionValue(int hourOfDay) {
 
-        for(PeakUsagePeriod pup : peakUsagePeriods) {
-            if(pup.isInPeakPeriod(hourOfDay)) isInPeak = true;
+        double usage = offPeakUsage;
+        for(SampleUsagePoint pup : sampleUsagePoints) {
+            if(pup.isInPeriod(hourOfDay)) 
+        	{
+        		usage = pup.usage;
+        	}
         }
 
-        return isInPeak ? peakUsage : offPeakUsage;
+        return usage;
     }
 }

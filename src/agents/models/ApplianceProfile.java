@@ -17,7 +17,7 @@ public class ApplianceProfile {
         if(!isValid()) throw new InvalidParameterException("Invalid ApplianceProfile params");
     }
 
-    public int getCurrentConsumptionValue(DayOfWeek dayOfWeek, int hourOfDay) throws Exception {
+    public double getCurrentConsumptionValue(DayOfWeek dayOfWeek, int hourOfDay) throws Exception {
         DayUsageProfile current = null;
 
         for(DayUsageProfile dup : dayUsageProfiles) {

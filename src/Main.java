@@ -1,7 +1,7 @@
 import agents.*;
 import agents.models.ApplianceProfile;
 import agents.models.DayUsageProfile;
-import agents.models.PeakUsagePeriod;
+import agents.models.SampleUsagePoint;
 import jade.core.Runtime;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
@@ -72,135 +72,212 @@ public class Main {
         SwingUtilities.invokeLater(smartHomeEnergyApplicationUi);
     }
 
+    public static Vector<SampleUsagePoint> makeUsageSinWave(int startTime, int endTime, double peak)
+    {
+    	Vector<SampleUsagePoint> result = new Vector<SampleUsagePoint>();
+	    double period = (endTime - startTime);
+	    for(int i = startTime; i < endTime; ++i)
+	    {
+	    	double value = peak * Math.sin((Math.PI/period) * (double)(i-startTime));
+	    	result.add(new SampleUsagePoint(i, i+1, value));
+	    }
+	    return result;
+    }
+    
     private static Vector<ApplianceProfile> getApplianceAgentProfiles() {
         Vector<ApplianceProfile> applianceProfiles = new Vector<ApplianceProfile>();
-
-        // Solar Panel 1
-        applianceProfiles.add(new ApplianceProfile("SolarPanel1", new DayUsageProfile[] {
-                new DayUsageProfile(DayOfWeek.MONDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.TUESDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.WEDNESDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.THURSDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.FRIDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.SATURDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.SUNDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                })
+        
+        Vector<SampleUsagePoint> ap = makeUsageSinWave(6, 18, -4.0);
+        SampleUsagePoint[] app = new SampleUsagePoint[ap.size()];
+        
+        ap.toArray(app);
+        
+        // Solar Panel System
+        applianceProfiles.add(new ApplianceProfile("SolarPanelSystem", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, 0, app),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 0, app),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, app),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 0, app),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 0, app),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 0, app),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 0, app)
         }));
 
-        // Solar Panel 2
-        applianceProfiles.add(new ApplianceProfile("SolarPanel2", new DayUsageProfile[] {
-                new DayUsageProfile(DayOfWeek.MONDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.TUESDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.WEDNESDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.THURSDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.FRIDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.SATURDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.SUNDAY, -453, -234, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                })
-        }));
-
-        // Tv 1
-        applianceProfiles.add(new ApplianceProfile("TV1", new DayUsageProfile[] {
-                new DayUsageProfile(DayOfWeek.MONDAY, 45, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.TUESDAY, 45, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.WEDNESDAY, 45, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.THURSDAY, 45, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.FRIDAY, 45, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.SATURDAY, 45, 45, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.SUNDAY, 45, 45, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                })
-        }));
-
-        // Tv 1
-        applianceProfiles.add(new ApplianceProfile("TV2", new DayUsageProfile[] {
-                new DayUsageProfile(DayOfWeek.MONDAY, 78, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.TUESDAY, 78, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.WEDNESDAY, 78, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.THURSDAY, 78, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.FRIDAY, 78, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.SATURDAY, 78, 78, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                }),
-                new DayUsageProfile(DayOfWeek.SUNDAY, 78, 78, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 17, 6)
-                })
-        }));
-
-        // Washing Machine
+/*        // Washing Machine
         applianceProfiles.add(new ApplianceProfile("WashingMachine", new DayUsageProfile[] {
-                new DayUsageProfile(DayOfWeek.MONDAY, 0, 0, new PeakUsagePeriod[] {}),
-                new DayUsageProfile(DayOfWeek.TUESDAY, 0, 0, new PeakUsagePeriod[] {}),
-                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, 0, new PeakUsagePeriod[] {}),
-                new DayUsageProfile(DayOfWeek.THURSDAY, 0, 0, new PeakUsagePeriod[] {}),
-                new DayUsageProfile(DayOfWeek.FRIDAY, 0, 0, new PeakUsagePeriod[] {}),
-                new DayUsageProfile(DayOfWeek.SATURDAY, 168, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 13, 2)
+                new DayUsageProfile(DayOfWeek.MONDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
                 }),
-                new DayUsageProfile(DayOfWeek.SUNDAY, 168, 0, new PeakUsagePeriod[] {
-                        new PeakUsagePeriod(10, 13, 2)
+                new DayUsageProfile(DayOfWeek.TUESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
                 })
         }));
 
-        // Fridge
-        applianceProfiles.add(new ApplianceProfile("Fridge", new DayUsageProfile[] {
-                new DayUsageProfile(DayOfWeek.MONDAY, 0, 1400, new PeakUsagePeriod[] {}),
-                new DayUsageProfile(DayOfWeek.TUESDAY, 0, 1400, new PeakUsagePeriod[] {}),
-                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, 1400, new PeakUsagePeriod[] {}),
-                new DayUsageProfile(DayOfWeek.THURSDAY, 0, 1400, new PeakUsagePeriod[] {}),
-                new DayUsageProfile(DayOfWeek.FRIDAY, 0, 1400, new PeakUsagePeriod[] {}),
-                new DayUsageProfile(DayOfWeek.SATURDAY, 0, 1400, new PeakUsagePeriod[] {}),
-                new DayUsageProfile(DayOfWeek.SUNDAY, 0, 1400, new PeakUsagePeriod[] {})
+        // Dryer
+        applianceProfiles.add(new ApplianceProfile("Dryer", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                })
         }));
 
+        // Desktop Computer System
+        applianceProfiles.add(new ApplianceProfile("DesktopComputerSystem", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                })
+        }));
+
+        // Clock Radio
+        applianceProfiles.add(new ApplianceProfile("ClockRadio", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                })
+        }));
+
+        // LCD TV
+        applianceProfiles.add(new ApplianceProfile("LCDTV", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                })
+        }));
+
+     // Fridge/Freezer
+        applianceProfiles.add(new ApplianceProfile("FridgeFreezer", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                })
+        }));
+        
+     // Dishwasher
+        applianceProfiles.add(new ApplianceProfile("Dishwasher", new DayUsageProfile[] {
+                new DayUsageProfile(DayOfWeek.MONDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                }),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 0, new SampleUsagePoint[] {
+                        new SampleUsagePoint(10, 17, 6)
+                })
+        }));
+    */    
         return applianceProfiles;
     }
 }

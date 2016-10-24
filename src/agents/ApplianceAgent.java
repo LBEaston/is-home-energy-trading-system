@@ -70,7 +70,7 @@ public class ApplianceAgent extends AbstractAgent {
     }
 
     protected void informCurrentlyConsuming() {
-        int currentlyConsuming = currentlyConsuming();
+        double currentlyConsuming = currentlyConsuming();
 
         ACLMessage informMessage = new ACLMessage(ACLMessage.INFORM);
 
@@ -92,7 +92,7 @@ public class ApplianceAgent extends AbstractAgent {
         send(informMessage);
     }
 
-    private int currentlyConsuming() {
+    private double currentlyConsuming() {
         try {
             return applianceProfile.getCurrentConsumptionValue(dayOfWeek, hourOfDay);
         }

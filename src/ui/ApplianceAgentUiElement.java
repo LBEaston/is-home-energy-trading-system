@@ -32,7 +32,7 @@ public class ApplianceAgentUiElement extends AbstractAgentUiElement {
     @Override
     public void inform(StatusContainerBase currentStatus) {
         super.inform(currentStatus);
-        int currentConsumptionLevel = ((ApplianceStatusContainer)currentStatus).consuming;
+        double currentConsumptionLevel = ((ApplianceStatusContainer)currentStatus).consuming;
 
         if(currentConsumptionLevel > 0) {
             this.setBackground(Color.red);
