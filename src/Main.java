@@ -72,14 +72,14 @@ public class Main {
         SwingUtilities.invokeLater(smartHomeEnergyApplicationUi);
     }
 
-    public static Vector<SampleUsagePoint> makeUsageSinWave(int startTime, int endTime, double peak)
+    public static SampleUsagePoint[] makeUsageSinWave(int startTime, int endTime, double peak)
     {
-    	Vector<SampleUsagePoint> result = new Vector<SampleUsagePoint>();
 	    double period = (endTime - startTime);
+	    SampleUsagePoint[] result = new SampleUsagePoint[endTime-startTime+1];
 	    for(int i = startTime; i <= endTime; ++i)
 	    {
 	    	double value = peak * Math.sin((Math.PI/period) * (double)(i-startTime));
-	    	result.add(new SampleUsagePoint(i, i+1, value));
+	    	result[i-startTime] = new SampleUsagePoint(i, i+1, value);
 	    }
 	    return result;
     }
@@ -87,20 +87,17 @@ public class Main {
     private static Vector<ApplianceProfile> getApplianceAgentProfiles() {
         Vector<ApplianceProfile> applianceProfiles = new Vector<ApplianceProfile>();
         
-        Vector<SampleUsagePoint> ap = makeUsageSinWave(6, 18, -4.0);
-        SampleUsagePoint[] app = new SampleUsagePoint[ap.size()];
-        
-        ap.toArray(app);
+        SampleUsagePoint[] solarSineWave = makeUsageSinWave(6, 18, -4.0);
         
         // Solar Panel System
         applianceProfiles.add(new ApplianceProfile("SolarPanelSystem", new DayUsageProfile[] {
-                new DayUsageProfile(DayOfWeek.MONDAY, 0, app),
-                new DayUsageProfile(DayOfWeek.TUESDAY, 0, app),
-                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, app),
-                new DayUsageProfile(DayOfWeek.THURSDAY, 0, app),
-                new DayUsageProfile(DayOfWeek.FRIDAY, 0, app),
-                new DayUsageProfile(DayOfWeek.SATURDAY, 0, app),
-                new DayUsageProfile(DayOfWeek.SUNDAY, 0, app)
+                new DayUsageProfile(DayOfWeek.MONDAY, 0, solarSineWave, 0.8, 1.1),
+                new DayUsageProfile(DayOfWeek.TUESDAY, 0, solarSineWave, 0.8, 1.1),
+                new DayUsageProfile(DayOfWeek.WEDNESDAY, 0, solarSineWave, 0.8, 1.1),
+                new DayUsageProfile(DayOfWeek.THURSDAY, 0, solarSineWave, 0.8, 1.1),
+                new DayUsageProfile(DayOfWeek.FRIDAY, 0, solarSineWave, 0.8, 1.1),
+                new DayUsageProfile(DayOfWeek.SATURDAY, 0, solarSineWave, 0.8, 1.1),
+                new DayUsageProfile(DayOfWeek.SUNDAY, 0, solarSineWave, 0.8, 1.1)
         }));
 
 /*        // Washing Machine
