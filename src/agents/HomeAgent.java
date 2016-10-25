@@ -219,10 +219,6 @@ public class HomeAgent extends AbstractAgent {
 
     /** Prediction Logic **/
     private double predictKWHForNextNHours(int n) {
-    	double[] historyX = new double[12], historyY = new double[12];
-    	LinearFunction predictedLine = getLinearRegression(historyX, historyY);
-    	
-    	double result = predictedLine.definiteIntegral(historyX[historyX.length-1], historyX[historyX.length-1] + n);
         double historicPrediction = doHistoricPrediction(n);
         double linearPrediction = doLinearPrediction(n);
 
@@ -250,7 +246,7 @@ public class HomeAgent extends AbstractAgent {
     }
 
     private double getHistoricalConsumptionTotalByInstantDescriptor(InstantDescriptor instantDescriptor) {
-        Vector<Double> dataPoints = new Vector();
+        Vector<Double> dataPoints = new Vector<Double>();
 
         Iterator<Map.Entry<String, ApplianceConsumptionHistory>> it = applianceConsumptionHistory.entrySet().iterator();
         while(it.hasNext()) {

@@ -35,6 +35,17 @@ public class GraphPanel extends JPanel {
     public GraphPanel(double[] scores) {
         this.scores = scores;
     }
+    
+    private String getDayStringFromHour(int hour)
+    {
+    	if (hour < 24) return "MON";
+    	if (hour < 24*2) return "TUE";
+    	if (hour < 24*3) return "WED";
+    	if (hour < 24*4) return "THU";
+    	if (hour < 24*5) return "FRI";
+    	if (hour < 24*6) return "SAT";
+    	return "SUN";
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -86,7 +97,7 @@ public class GraphPanel extends JPanel {
                     g2.setColor(gridColor);
                     g2.drawLine(x0, getHeight() - padding - labelPadding - 1 - pointWidth, x1, padding);
                     g2.setColor(Color.BLACK);
-                    String xLabel = i + "";
+                    String xLabel = getDayStringFromHour(i);//i + "";
                     FontMetrics metrics = g2.getFontMetrics();
                     int labelWidth = metrics.stringWidth(xLabel);
                     g2.drawString(xLabel, x0 - labelWidth / 2, y0 + metrics.getHeight() + 3);
