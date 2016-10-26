@@ -380,7 +380,7 @@ public class HomeAgent extends AbstractAgent {
     		sellpriceContribution = 1.0; // Want 
     	}
     	
-    	result = (buypriceContribution*c.buyingPrice + sellpriceContribution*c.sellingPrice)/Math.sqrt((double)c.duration);
+    	result = (buypriceContribution*c.retailerSellingPrice + sellpriceContribution*c.retailerBuyingPrice)/Math.sqrt((double)c.duration);
     	
     	return result;
     }

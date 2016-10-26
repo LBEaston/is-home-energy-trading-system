@@ -12,6 +12,7 @@ import jade.proto.ContractNetResponder;
 import ui.containers.RetailerStatusContainer;
 
 import java.security.InvalidParameterException;
+import java.util.Random;
 import java.util.Vector;
 
 /**
@@ -117,6 +118,12 @@ public class RetailerAgent extends AbstractAgent {
 
         return proposalMessage.substring(0, proposalMessage.length() - 1);
     }
+    
+    private Random random = new Random();
+    private double getRandXto1(double x)
+    {
+    	return random.nextDouble()*(1.0-x) + x;
+    }
 
     private Vector<Proposal> getProposalStrategies() {
         Vector<Proposal> proposalStrategies = new Vector<Proposal>();
@@ -132,9 +139,9 @@ public class RetailerAgent extends AbstractAgent {
         }
 
         proposalStrategies.add(new Proposal(this.getLocalName(),
-                isOffPeak ? offPeakSellPrice : peakSellPrice,
-                isOffPeak ? offPeakBuyPrice : peakBuyPrice,
-                appTicksRemainingInCurrentPeakOffPeakPeriod));
+                isOffPeak ? (int)(offPeakSellPrice*getRandXto1(0.8)) : (int)(peakSellPrice*getRandXto1(0.8)),
+                isOffPeak ? (int)(offPeakBuyPrice*getRandXto1(0.8)) : (int)(peakBuyPrice*getRandXto1(0.8)),
+                (int)(appTicksRemainingInCurrentPeakOffPeakPeriod*getRandXto1(0.8))));
 
         return proposalStrategies;
     }

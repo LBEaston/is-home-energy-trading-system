@@ -57,10 +57,12 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         previousNetConsumption.setText(previous.replace("Current", "Previous"));
 
         if(status.currentEnergyContract != null) {
-            currentContractDetails.setText(String.format("Contract with %s. Buying@%s. Selling@%s.",
-                    status.currentEnergyContract.seller,
-                    status.currentEnergyContract.buyingPrice,
-                    status.currentEnergyContract.sellingPrice));
+            currentContractDetails.setText(String.format("Contract with %s.  Buying@%s.  Selling@%s.  Duration: %s",
+                    status.currentEnergyContract.retailer,
+                    status.currentEnergyContract.retailerSellingPrice,
+                    status.currentEnergyContract.retailerBuyingPrice,
+                    status.currentEnergyContract.duration));
+            currentContractDetails.validate();
         }
 
         graphScores[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.currentNetConsumption);

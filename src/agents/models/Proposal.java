@@ -6,16 +6,16 @@ import java.util.Vector;
  * Created by fegwin on 12/10/2016.
  */
 public class Proposal {
-    public String seller;
-    public float sellingPrice;
-    public float buyingPrice;
+    public String retailer;
+    public double retailerSellingPrice;
+    public double retailerBuyingPrice;
     public int duration;
 
-    public Proposal(String seller, float sellingPrice, float buyingPrice, int duration) {
-        this.seller = seller;
+    public Proposal(String retailer, float sellingPrice, float buyingPrice, int duration) {
+        this.retailer = retailer;
 
-        this.sellingPrice = sellingPrice;
-        this.buyingPrice = buyingPrice;
+        this.retailerSellingPrice = sellingPrice;
+        this.retailerBuyingPrice = buyingPrice;
         this.duration = duration;
 
     }
@@ -23,11 +23,11 @@ public class Proposal {
     @Override
     /*proposal;sellingAt=<FLOAT>;buyingAt=<FLOAT>;duration=<INT>*/
     public String toString() {
-        return String.format("proposal;seller=%s;sellingAt=%s;buyingAt=%s;duration=%s", seller, sellingPrice, buyingPrice, duration);
+        return String.format("proposal;seller=%s;sellingAt=%s;buyingAt=%s;duration=%s", retailer, retailerSellingPrice, retailerBuyingPrice, duration);
     }
 
     public String toReadableString() {
-        return String.format("Sale Price (%s) | Buy Price (%s) | Duration (%s)", sellingPrice, buyingPrice, duration);
+        return String.format("Sale Price (%s) | Buy Price (%s) | Duration (%s)", retailerSellingPrice, retailerBuyingPrice, duration);
     }
 
     public static Vector<Proposal> fromCompoundString(String compundProposalString) {
