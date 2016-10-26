@@ -155,14 +155,16 @@ public class HomeAgent extends AbstractAgent {
                     }
                 }
 
-                // Accept best proposal
-                ACLMessage reply = bestMessage.createReply();
-
-                reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
-                reply.setContent(bestProposal.toString());
-
-                acceptances.addElement(reply);
-
+                if (bestMessage != null)
+                {
+	                // Accept best proposal
+	                ACLMessage reply = bestMessage.createReply();
+	
+	                reply.setPerformative(ACLMessage.ACCEPT_PROPOSAL);
+	                reply.setContent(bestProposal.toString());
+	
+	                acceptances.addElement(reply);
+                }
                 // Reject remaining elements
                 for(ACLMessage msg : proposalMessages)
                 {

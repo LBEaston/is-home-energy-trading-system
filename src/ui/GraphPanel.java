@@ -31,6 +31,9 @@ public class GraphPanel extends JPanel {
     private int pointWidth = 4;
     private int numberYDivisions = 10;
     private double[] scores;
+    private double currentTime = 0;
+    private double startTime = 0;
+    private double endTime = 0;
 
     public GraphPanel(double[] scores) {
         this.scores = scores;
@@ -110,14 +113,44 @@ public class GraphPanel extends JPanel {
         g2.drawLine(padding + labelPadding, getHeight() - padding - labelPadding, padding + labelPadding, padding);
         g2.drawLine(padding + labelPadding, getHeight() - padding - labelPadding, getWidth() - padding, getHeight() - padding - labelPadding);
 
-        Color colorLookup[] = new Color[7];
+      
+        
+        {
+        	g2.setColor(Color.BLACK);
+        	int x1 = (int) (startTime * xScale + padding + labelPadding);
+        	int y1 = (int) (padding);
+        	
+        	int y2 = (int) ((getMaxScore() - getMinScore()) * yScale + padding);
+        	g2.drawLine(x1, y1, x1, y2);
+        }
+        
+        {
+        	g2.setColor(Color.BLACK);
+        	int x1 = (int) (endTime * xScale + padding + labelPadding);
+        	int y1 = (int) (padding);
+        	
+        	int y2 = (int) ((getMaxScore() - getMinScore()) * yScale + padding);
+        	g2.drawLine(x1, y1, x1, y2);
+        }
+        
+        {
+        	g2.setColor(Color.gray);
+        	int x1 = (int) (currentTime * xScale + padding + labelPadding);
+        	int y1 = (int) (padding);
+        	
+        	int y2 = (int) ((getMaxScore() - getMinScore()) * yScale + padding);
+        	g2.drawLine(x1, y1, x1, y2);
+        }
+        
+        Color colorLookup[] = new Color[8];
         colorLookup[0] = Color.red;
         colorLookup[1] = Color.orange;
         colorLookup[2] = Color.yellow;
         colorLookup[3] = Color.green;
-        colorLookup[4] = Color.blue;
-        colorLookup[5] = Color.magenta;
-        colorLookup[6] = Color.lightGray;
+        colorLookup[4] = Color.cyan;
+        colorLookup[5] = Color.blue;
+        colorLookup[6] = Color.magenta;
+        colorLookup[7] = Color.lightGray;
         Stroke oldStroke = g2.getStroke();
         g2.setColor(lineColor);
         g2.setStroke(GRAPH_STROKE);
@@ -129,6 +162,8 @@ public class GraphPanel extends JPanel {
             int y2 = graphPoints.get(i + 1).y;
             g2.drawLine(x1, y1, x2, y2);
         }
+        
+        
 
         g2.setStroke(oldStroke);
         g2.setColor(pointColor);
@@ -161,6 +196,29 @@ public class GraphPanel extends JPanel {
         this.scores = scores;
         invalidate();
         this.repaint();
+    }
+    
+    public void setCurrentTime(double time)
+    {
+    	currentTime = time;
+    }
+    
+    public void setStartEndTimes(double start, double end)
+    {
+    	/* Oh my god this is a hack but I can't brain properly right now */
+    	if (endTime >= 24*7)
+    	{
+    		startTime = start;
+    		endTime = end;
+    	}
+    	else
+    	{
+    		if (start >= endTime)
+    		{
+    			startTime = start;
+        		endTime = end;
+    		}
+    	}
     }
 
     public double[] getScores() {

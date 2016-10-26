@@ -43,16 +43,43 @@ public class Main {
                 // 1 fridge
         Vector<AgentController> agents = new Vector<>();
 
-        /*
-                isOffPeak = (boolean)args[0];
-                offPeakTickCount = (int)args[1];
-                peakTickCount = (int)args[2];
-                peakPrice = (int)args[3];
-                offPeakPrice = (int)args[4];
-         */
-        agents.add(agentContainer.createNewAgent("AGL", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 234}));
-        agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 243}));
-        agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 243}));
+        //{true, 8, 16, 123, 434, 78, 234}));
+        //agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 243}));
+        //agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 243}));
+        
+        RetailerAgent.RetailerDescriptor AGL = new RetailerAgent.RetailerDescriptor();
+        AGL.isOffPeak = true;
+        AGL.offPeakTickCount = 8;
+        AGL.peakTickCount = 16;
+		AGL.peakSellPrice = 123;
+		AGL.offPeakSellPrice = 434;
+		AGL.peakBuyPrice = 78;
+		AGL.offPeakBuyPrice = 234;
+		AGL.currentPeakOffPeakTickCount = 0;
+		
+        RetailerAgent.RetailerDescriptor CityPower = new RetailerAgent.RetailerDescriptor();
+        CityPower.isOffPeak = true;
+        CityPower.offPeakTickCount = 8;
+        CityPower.peakTickCount = 16;
+        CityPower.peakSellPrice = 123;
+        CityPower.offPeakSellPrice = 434;
+        CityPower.peakBuyPrice = 78;
+        CityPower.offPeakBuyPrice = 234;
+        CityPower.currentPeakOffPeakTickCount = 0;
+        
+        RetailerAgent.RetailerDescriptor HomeBrand = new RetailerAgent.RetailerDescriptor();
+        HomeBrand.isOffPeak = true;
+        HomeBrand.offPeakTickCount = 8;
+        HomeBrand.peakTickCount = 16;
+        HomeBrand.peakSellPrice = 123;
+        HomeBrand.offPeakSellPrice = 434;
+        HomeBrand.peakBuyPrice = 78;
+        HomeBrand.offPeakBuyPrice = 234;
+        HomeBrand.currentPeakOffPeakTickCount = 0;
+		
+        agents.add(agentContainer.createNewAgent("AGL", RetailerAgent.class.getName(), new Object[] {AGL}));
+        agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new Object[] {CityPower}));
+        agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {CityPower}));
 
         agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new Object[] {"HomeBrand", "AGL", "CityPower"}));
 

@@ -6,9 +6,6 @@ import ui.containers.HomeStatusContainer;
 import ui.containers.StatusContainerBase;
 
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import javax.swing.*;
 
@@ -46,6 +43,11 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         homeUsageFrame.setLocationRelativeTo(null);
         homeUsageFrame.setVisible(true);
     }
+    
+    private int timeToGraph(HomeStatusContainer status)
+    {
+    	return (status.dayOfWeek.getValue()-1) *24 + status.hourOfDay;
+    }
 
     @Override
     public void inform(StatusContainerBase currentStatus) {
@@ -56,6 +58,7 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         currentNetConsumption.setText("Current net: " + status.currentNetConsumption + " kwH");
         previousNetConsumption.setText(previous.replace("Current", "Previous"));
 
+        int graphIndex = timeToGraph(status);
         if(status.currentEnergyContract != null) {
             currentContractDetails.setText(String.format("Contract with %s.  Buying@%s.  Selling@%s.  Duration: %s",
                     status.currentEnergyContract.retailer,
@@ -63,9 +66,13 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
                     status.currentEnergyContract.retailerBuyingPrice,
                     status.currentEnergyContract.duration));
             currentContractDetails.validate();
+
+            graph.setStartEndTimes(graphIndex, 
+            		graphIndex + status.currentEnergyContract.duration);
         }
 
         graphScores[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.currentNetConsumption);
         graph.setScores(graphScores);
+        graph.setCurrentTime(graphIndex);
     }
 }

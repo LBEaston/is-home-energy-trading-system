@@ -26,21 +26,27 @@ public class RetailerAgent extends AbstractAgent {
 	 * Offpeak is on weekends and between 10pm–7am on weekdays
 	 * Shoulder time between 7am–4pm, 8pm–10pm
 	 * 
-	 * Price per kwh averages around ~25-35cents in Australia: https://www.ovoenergy.com/guides/energy-guides/average-electricity-prices-kwh.html
+	 * Price per kwh averages around ~25-35cents in Australia, (17-20 off peak): https://www.ovoenergy.com/guides/energy-guides/average-electricity-prices-kwh.html
 	 * http://cmeaustralia.com.au/wp-content/uploads/2013/09/FINAL-INTERNATIONAL-PRICE-COMPARISON-FOR-PUBLIC-RELEASE-29-MARCH-2012.pdf
 	 */
-	private boolean isOffPeak;
+	
+	public static class RetailerDescriptor
+	{
+		public boolean isOffPeak;
 
-    private int offPeakTickCount;
-    private int peakTickCount;
+		public int offPeakTickCount;
+		public int peakTickCount;
 
-    private int peakSellPrice;
-    private int offPeakSellPrice;
-    private int peakBuyPrice;
-    private int offPeakBuyPrice;
+		public int peakSellPrice;
+		public int offPeakSellPrice;
+		public int peakBuyPrice;
+		public int offPeakBuyPrice;
 
-    private int currentPeakOffPeakTickCount = 0;
-
+		public int currentPeakOffPeakTickCount = 0;
+	}
+	
+	private RetailerDescriptor descriptor;
+	
     @Override
     public EnergyAgentType getAgentType() {
         return EnergyAgentType.RetailerAgent;
@@ -52,18 +58,9 @@ public class RetailerAgent extends AbstractAgent {
 
         Object[] args = getArguments();
 
-        if(args.length < 7) throw new InvalidParameterException("Have not provided starting consumption value");
+        if(args.length < 1) throw new InvalidParameterException("Have not provided starting consumption value");
 
-        isOffPeak = (boolean)args[0];
-
-        offPeakTickCount = (int)args[1];
-        peakTickCount = (int)args[2];
-
-        peakSellPrice = (int)args[3];
-        peakBuyPrice = (int)args[4];
-
-        offPeakSellPrice = (int)args[5];
-        offPeakBuyPrice = (int)args[6];
+        descriptor = (RetailerDescriptor)args[0];
     }
 
     // Control Logic
@@ -71,7 +68,7 @@ public class RetailerAgent extends AbstractAgent {
     public void appTickElapsed() {
         evaluatePeakOffPeakPeriod();
 
-        Vector currentProposals = getProposalStrategies();
+        Vector<Proposal> currentProposals = getProposalStrategies();
         fireStatusChangedEvent(new RetailerStatusContainer(hourOfDay, dayOfWeek, currentProposals));
     }
 
@@ -140,15 +137,15 @@ public class RetailerAgent extends AbstractAgent {
         // Any complex logic on variables rates/lock in periods should go here
         int appTicksRemainingInCurrentPeakOffPeakPeriod;
 
-        if(isOffPeak) {
-            appTicksRemainingInCurrentPeakOffPeakPeriod = offPeakTickCount - currentPeakOffPeakTickCount;
+        if(descriptor.isOffPeak) {
+            appTicksRemainingInCurrentPeakOffPeakPeriod = descriptor.offPeakTickCount - descriptor.currentPeakOffPeakTickCount;
         } else {
-            appTicksRemainingInCurrentPeakOffPeakPeriod = peakTickCount - currentPeakOffPeakTickCount;
+            appTicksRemainingInCurrentPeakOffPeakPeriod = descriptor.peakTickCount - descriptor.currentPeakOffPeakTickCount;
         }
 
         proposalStrategies.add(new Proposal(this.getLocalName(),
-                isOffPeak ? (int)(offPeakSellPrice*getRandXto1(0.8)) : (int)(peakSellPrice*getRandXto1(0.8)),
-                isOffPeak ? (int)(offPeakBuyPrice*getRandXto1(0.8)) : (int)(peakBuyPrice*getRandXto1(0.8)),
+        				descriptor.isOffPeak ? (int)(descriptor.offPeakSellPrice*getRandXto1(0.8)) : (int)(descriptor.peakSellPrice*getRandXto1(0.8)),
+        				descriptor.isOffPeak ? (int)(descriptor.offPeakBuyPrice*getRandXto1(0.8)) : (int)(descriptor.peakBuyPrice*getRandXto1(0.8)),
                 (int)(appTicksRemainingInCurrentPeakOffPeakPeriod*getRandXto1(0.8))));
 
         return proposalStrategies;
@@ -162,15 +159,15 @@ public class RetailerAgent extends AbstractAgent {
     private void evaluatePeakOffPeakPeriod() {
         int ticksThatShouldHaveElapsed;
 
-        if(isOffPeak) {
-            ticksThatShouldHaveElapsed = offPeakTickCount;
+        if(descriptor.isOffPeak) {
+            ticksThatShouldHaveElapsed = descriptor.offPeakTickCount;
         } else {
-            ticksThatShouldHaveElapsed = peakTickCount;
+            ticksThatShouldHaveElapsed = descriptor.peakTickCount;
         }
 
-        if(currentPeakOffPeakTickCount >= ticksThatShouldHaveElapsed) {
-            isOffPeak = !isOffPeak;
-            currentPeakOffPeakTickCount = 0;
+        if(descriptor.currentPeakOffPeakTickCount >= ticksThatShouldHaveElapsed) {
+        	descriptor.isOffPeak = !descriptor.isOffPeak;
+        	descriptor.currentPeakOffPeakTickCount = 0;
         }
     }
 }
