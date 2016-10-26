@@ -79,8 +79,8 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         graphScores[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.currentNetConsumption);
         graph.setScores(graphScores);
         
-        graphScoresPrediction[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.predictionForNextHour);
-        graphPrediction.setScores(graphScoresPrediction);
+        // graphScoresPrediction[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.predictionForNextHour);
+        // graphPrediction.setScores(graphScoresPrediction);
         
     }
 }
