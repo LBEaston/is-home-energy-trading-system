@@ -24,9 +24,6 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
     private GraphPanel graph;
     private double[] graphScores = new double[24*7];
     
-    private GraphPanel graphPrediction;
-    private double[] graphScoresPrediction = new double[24*7];
-    
     public HomeAgentUiElement(AgentController agentController) throws StaleProxyException {
         super(agentController, true);
 
@@ -42,22 +39,12 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         graph = new GraphPanel(graphScores);
         graph.setPreferredSize(new Dimension(1000, 200));
         
-        graphPrediction = new GraphPanel(graphScoresPrediction);
-        graphPrediction.setPreferredSize(new Dimension(1000, 200));
-        
         JFrame homeUsageFrame = new JFrame("HomeUsage Graph");
         homeUsageFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         homeUsageFrame.getContentPane().add(graph);
         homeUsageFrame.pack();
         homeUsageFrame.setLocationRelativeTo(null);
         homeUsageFrame.setVisible(true);
-        
-        JFrame predictionFrame = new JFrame("Prediction Graph");
-        predictionFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        predictionFrame.getContentPane().add(graphPrediction);
-        predictionFrame.pack();
-        predictionFrame.setLocationRelativeTo(null);
-        predictionFrame.setVisible(true);
     }
 
     @Override
@@ -78,9 +65,5 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
 
         graphScores[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.currentNetConsumption);
         graph.setScores(graphScores);
-        
-        // graphScoresPrediction[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.predictionForNextHour);
-        // graphPrediction.setScores(graphScoresPrediction);
-        
     }
 }

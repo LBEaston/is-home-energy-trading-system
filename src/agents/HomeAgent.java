@@ -12,11 +12,16 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.ContractNetInitiator;
 import jade.core.behaviours.CyclicBehaviour;
+import ui.GraphPanel;
 import ui.containers.HomeStatusContainer;
 
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import javax.swing.JFrame;
+
+import java.awt.Dimension;
 import java.util.*
 
 ;/**
@@ -49,6 +54,8 @@ public class HomeAgent extends AbstractAgent {
         return EnergyAgentType.HomeAgent;
     }
 
+    private GraphPanel graphPrediction;
+    private double[] graphScoresPrediction = new double[24*7];
     protected void setup() {
         super.setup();
 
@@ -59,6 +66,16 @@ public class HomeAgent extends AbstractAgent {
             String retailer = (String)arg;
             retailers.add(retailer);
         }
+        
+        
+        graphPrediction = new GraphPanel(graphScoresPrediction);
+        graphPrediction.setPreferredSize(new Dimension(1000, 200));
+        JFrame predictionFrame = new JFrame("Prediction Graph");
+        predictionFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        predictionFrame.getContentPane().add(graphPrediction);
+        predictionFrame.pack();
+        predictionFrame.setLocationRelativeTo(null);
+        predictionFrame.setVisible(true);
     }
 
     /** Behaviours and Control Logic **/
@@ -76,6 +93,8 @@ public class HomeAgent extends AbstractAgent {
 
         ticksTillNextNegotiation--;
         addBehaviour(getRecalculateAndUpdateBehaviour());
+
+        graphPrediction.setScores(graphScoresPrediction);
     }
 
     private void negotiateWithRetailers() {
@@ -235,6 +254,7 @@ public class HomeAgent extends AbstractAgent {
         for(InstantDescriptor instantDescriptor : instancesForTheNextNHoursWorthOfPredictions) {
             double historicalAverageForThisHourDay = getHistoricalConsumptionTotalByInstantDescriptor(instantDescriptor);
             predictedConsumptionsForTheNextNHours.add(historicalAverageForThisHourDay);
+            graphScoresPrediction[(instantDescriptor.dayOfWeek.getValue()-1) *24 + instantDescriptor.hourOfDay] = (historicalAverageForThisHourDay);
         }
 
         double sum = 0;
@@ -261,6 +281,7 @@ public class HomeAgent extends AbstractAgent {
             }
         }
 
+        if (dataPoints.size() == 0) return 0;
         double sum = 0;
         for(Double dataPoint : dataPoints) {
             sum += dataPoint;
