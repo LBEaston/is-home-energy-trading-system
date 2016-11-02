@@ -32,6 +32,7 @@ public class HomeAgent extends AbstractAgent {
     private int ticksTillNextNegotiation = 0;
 
     private boolean inLoyalMode = true;
+    private boolean hasLoyalContract = false;
     private boolean inTheMiddleOfANegotiation = false;
 
     public HomeAgent() {
@@ -56,12 +57,14 @@ public class HomeAgent extends AbstractAgent {
         super.setup();
 
         // Grab the known retailers, from args
-        Object[] args = getArguments();
+        Object[] args = (Object[])getArguments()[0];
 
         for(Object arg : args) {
             String retailer = (String)arg;
             retailers.add(retailer);
         }
+
+        this.inLoyalMode = (boolean)getArguments()[1];
 
 //        graphPrediction = new GraphPanel(graphScoresPrediction);
 //        graphPrediction.setPreferredSize(new Dimension(1000, 200));
@@ -93,7 +96,7 @@ public class HomeAgent extends AbstractAgent {
     }
 
     private void negotiateWithRetailers() {
-        if(inTheMiddleOfANegotiation) return;
+        if(inTheMiddleOfANegotiation || hasLoyalContract) return;
 
         addBehaviour(getRetailerNegotiationBehaviour());
     }
@@ -173,6 +176,11 @@ public class HomeAgent extends AbstractAgent {
             protected void handleInform(ACLMessage inform) {
                 currentEnergyContract = Proposal.fromString(inform.getContent());
                 ticksTillNextNegotiation = currentEnergyContract.duration;
+
+                if(inLoyalMode) {
+                    hasLoyalContract = true;
+                    // Stop trying to get another contract. This is it!
+                }
             }
         };
     }

@@ -121,6 +121,7 @@ public class SmartHomeEnergyApplication implements Runnable {
             retailerPanel.add(agentUiElement, AbstractAgentUiElement.getGridBagConstraints());
         }
 
+        retailerPanel.setMinimumSize(new Dimension(400, 300));
         retailerPanel.pack();
         retailerPanel.setVisible(true);
     }

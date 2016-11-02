@@ -70,17 +70,24 @@ public class Main {
     }
 
     private static void createAndAddDumbHomeAgent(AgentContainer agentContainer, Vector<AgentController> agents) throws StaleProxyException {
-
-    }
-
-    private static void createAndAddSmartHomeAgent(AgentContainer agentContainer, Vector<AgentController> agents) throws StaleProxyException {
-        agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new Object[] {"HomeBrand", "AGL", "CityPower"}));
+        agents.add(agentContainer.createNewAgent("DumbHomeAgent", HomeAgent.class.getName(), new Object[] {new Object[] {"HomeBrand", "AGL", "CityPower"}, true}));
 
         // appliance agents
         Vector<ApplianceProfile> applianceProfiles = getApplianceAgentProfiles();
 
         for(ApplianceProfile ap : applianceProfiles) {
-            agents.add(agentContainer.createNewAgent(ap.applianceName, ApplianceAgent.class.getName(), new Object[] {"HomeAgent", ap}));
+            agents.add(agentContainer.createNewAgent(ap.applianceName + "1", ApplianceAgent.class.getName(), new Object[] {"DumbHomeAgent", ap}));
+        }
+    }
+
+    private static void createAndAddSmartHomeAgent(AgentContainer agentContainer, Vector<AgentController> agents) throws StaleProxyException {
+        agents.add(agentContainer.createNewAgent("SmartHomeAgent", HomeAgent.class.getName(), new Object[] {new Object[] {"HomeBrand", "AGL", "CityPower"}, false}));
+
+        // appliance agents
+        Vector<ApplianceProfile> applianceProfiles = getApplianceAgentProfiles();
+
+        for(ApplianceProfile ap : applianceProfiles) {
+            agents.add(agentContainer.createNewAgent(ap.applianceName + "2", ApplianceAgent.class.getName(), new Object[] {"SmartHomeAgent", ap}));
         }
     }
 
@@ -200,7 +207,7 @@ public class Main {
         }));
         
         // DesktopComputerSystem1
-        applianceProfiles.add(new ApplianceProfile("DesktopComputerSystem1", new DayUsageProfile[] {
+        applianceProfiles.add(new ApplianceProfile("DesktopComputerSystem", new DayUsageProfile[] {
                 new DayUsageProfile(DayOfWeek.MONDAY, 0, new SampleUsagePoint[] {
                         new SampleUsagePoint(20, 22, 1.12)
                 }),
@@ -282,7 +289,7 @@ public class Main {
                 })
         }));
         
-     // Fridge/Freezer
+        // Fridge/Freezer
         applianceProfiles.add(new ApplianceProfile("FridgeFreezer", new DayUsageProfile[] {
                 new DayUsageProfile(DayOfWeek.MONDAY, 0, new SampleUsagePoint[] {
                         new SampleUsagePoint(0, 23, 0.059)
@@ -307,7 +314,7 @@ public class Main {
                 })
         }));
         
-     // Dishwasher
+        // Dishwasher
         applianceProfiles.add(new ApplianceProfile("Dishwasher", new DayUsageProfile[] {
                 new DayUsageProfile(DayOfWeek.MONDAY, 0, new SampleUsagePoint[] {
                         new SampleUsagePoint(17, 18, 1.4)
