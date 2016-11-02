@@ -47,12 +47,12 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         super.inform(currentStatus);
         HomeStatusContainer status = (HomeStatusContainer)currentStatus;
 
-        currentNetConsumption.setText("Current net: " + status.currentNetConsumption + " kwH");
-        totalSpendToDate.setText("Total spend: " + status.totalSpendToDate);
+        currentNetConsumption.setText(String.format("Current net: $%.2fkwH", status.currentNetConsumption));
+        totalSpendToDate.setText(String.format("Total spend: $%.2f", status.totalSpendToDate));
 
         int graphIndex = timeToGraph(status);
         if(status.currentEnergyContract != null) {
-            currentContractDetails.setText(String.format("Contract with %s.  Buying@%s.  Selling@%s.  Duration: %s",
+            currentContractDetails.setText(String.format("Contract with %s.  Buying@$%.2f.  Selling@$%.2f.  Duration: %s hours",
                     status.currentEnergyContract.retailer,
                     status.currentEnergyContract.retailerSellingPrice,
                     status.currentEnergyContract.retailerBuyingPrice,

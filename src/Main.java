@@ -30,12 +30,11 @@ public class Main {
         AgentContainer agentContainer = jadeRuntime.createAgentContainer(p);
 
         //3. Create/Startup all the agents
-            // 3 retailers
-            // 1 homeagent
-                // 2 solar panel
-                // 2 televisions
-                // 1 washing machine
-                // 1 fridge
+            // retailers
+            // smart homeagent
+                // appliances
+            // dumb homeagent
+                // appliances
         Vector<AgentController> agents = new Vector<>();
 
         // retailers
@@ -121,7 +120,7 @@ public class Main {
         agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {CityPower}));
     }
 
-    public static SampleUsagePoint[] makeUsageSinWave(int startTime, int endTime, double peak) {
+    private static SampleUsagePoint[] makeUsageSinWave(int startTime, int endTime, double peak) {
 	    double period = (endTime - startTime);
 	    SampleUsagePoint[] result = new SampleUsagePoint[endTime-startTime+1];
 	    for(int i = startTime; i <= endTime; ++i)
