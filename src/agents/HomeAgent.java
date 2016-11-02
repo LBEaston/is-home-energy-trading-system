@@ -53,18 +53,17 @@ public class HomeAgent extends AbstractAgent {
 
 //    private GraphPanel graphPrediction;
 //    private double[] graphScoresPrediction = new double[24*7];
-//    protected void setup() {
-//        super.setup();
-//
-//        // Grab the known retailers, from args
-//        Object[] args = getArguments();
-//
-//        for(Object arg : args) {
-//            String retailer = (String)arg;
-//            retailers.add(retailer);
-//        }
-//
-//
+    protected void setup() {
+        super.setup();
+
+        // Grab the known retailers, from args
+        Object[] args = getArguments();
+
+        for(Object arg : args) {
+            String retailer = (String)arg;
+            retailers.add(retailer);
+        }
+
 //        graphPrediction = new GraphPanel(graphScoresPrediction);
 //        graphPrediction.setPreferredSize(new Dimension(1000, 200));
 //        JFrame predictionFrame = new JFrame("Prediction Graph");
@@ -73,7 +72,7 @@ public class HomeAgent extends AbstractAgent {
 //        predictionFrame.pack();
 //        predictionFrame.setLocationRelativeTo(null);
 //        predictionFrame.setVisible(true);
-//    }
+    }
 
     /** Behaviours and Control Logic **/
     @Override
