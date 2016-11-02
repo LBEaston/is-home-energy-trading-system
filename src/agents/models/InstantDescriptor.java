@@ -3,7 +3,7 @@ package agents.models;
 import java.time.DayOfWeek;
 
 /**
- * Created by fegwin on 24/10/2016.
+ * Created by Aswin Lakshman on 24/10/2016.
  */
 public class InstantDescriptor {
     public DayOfWeek dayOfWeek;

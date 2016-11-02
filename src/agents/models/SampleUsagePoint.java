@@ -3,7 +3,7 @@ package agents.models;
 import java.security.InvalidParameterException;
 
 /**
- * Created by fegwin on 16/10/2016.
+ * Created by Aswin Lakshman on 16/10/2016.
  */
 public class SampleUsagePoint {
     protected int startHour;

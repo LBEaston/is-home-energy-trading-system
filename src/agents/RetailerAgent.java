@@ -16,12 +16,9 @@ import java.util.Random;
 import java.util.Vector;
 
 /**
- * Created by fegwin on 7/09/2016.
+ * Created by Aswin Lakshman on 7/09/2016.
  */
 public class RetailerAgent extends AbstractAgent {
-	private static final long serialVersionUID = 1L;
-
-	
 	/* https://www.originenergy.com.au/terms-and-conditions/qld-electricity-tariffs.html
 	 * Offpeak is on weekends and between 10pm�7am on weekdays
 	 * Shoulder time between 7am�4pm, 8pm�10pm

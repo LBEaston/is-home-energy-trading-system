@@ -3,7 +3,7 @@ package agents.models;
 import java.util.Vector;
 
 /**
- * Created by fegwin on 12/10/2016.
+ * Created by Aswin Lakshman on 12/10/2016.
  */
 public class Proposal {
     public String retailer;

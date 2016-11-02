@@ -14,7 +14,7 @@ import java.time.DayOfWeek;
 import java.util.Vector;
 
 /**
- * Created by fegwin on 7/09/2016.
+ * Created by Aswin Lakshman on 7/09/2016.
  */
 public class Main {
     public static void main(String[] args) throws StaleProxyException {

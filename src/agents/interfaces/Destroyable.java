@@ -1,7 +1,7 @@
 package agents.interfaces;
 
 /**
- * Created by fegwin on 15/09/2016.
+ * Created by Aswin Lakshman on 15/09/2016.
  */
 public interface Destroyable {
     void destroy();

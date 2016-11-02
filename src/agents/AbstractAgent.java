@@ -11,12 +11,10 @@ import java.time.DayOfWeek;
 import java.util.Vector;
 
 /**
- * Created by fegwin on 15/09/2016.
+ * Created by Aswin Lakshman on 15/09/2016.
  */
 public abstract class AbstractAgent extends Agent implements Observable, Destroyable {
-	private static final long serialVersionUID = 1L;
-
-	static final int APP_TICK = 1000;
+	static int APP_TICK = 1000;
 
     private Vector<Informable> statusEventListeners;
 

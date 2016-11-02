@@ -10,10 +10,9 @@ import ui.interfaces.Informable;
 import java.security.InvalidParameterException;
 
 /**
- * Created by fegwin on 7/09/2016.
+ * Created by Aswin Lakshman on 7/09/2016.
  */
 public class ApplianceAgent extends AbstractAgent {
-	private static final long serialVersionUID = 1L;
 	protected ApplianceProfile applianceProfile = null;
     protected String homeAgentName = null;
 

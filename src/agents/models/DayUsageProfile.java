@@ -5,7 +5,7 @@ import java.time.DayOfWeek;
 import java.util.Random;
 
 /**
- * Created by fegwin on 16/10/2016.
+ * Created by Aswin Lakshman on 16/10/2016.
  */
 public class DayUsageProfile {
     public DayOfWeek dayOfWeek;

@@ -18,10 +18,9 @@ import java.util.Vector;
 import java.util.*;
 
 /**
- * Created by fegwin on 7/09/2016.
+ * Created by Aswin Lakshman on 7/09/2016.
  */
 public class HomeAgent extends AbstractAgent {
-	private static final long serialVersionUID = 1L;
     // Internal State Variables
     private Vector<String> retailers;
     private HashMap<String, ApplianceConsumptionHistory> applianceConsumptionHistory;
