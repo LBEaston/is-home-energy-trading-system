@@ -9,7 +9,7 @@ import java.awt.*;
 import java.util.*;
 
 /**
- * Created by fegwin on 7/09/2016.
+ * Created by Aswin Lakshman on 7/09/2016.
  */
 public class SmartHomeEnergyApplication implements Runnable {
     private Vector<AgentController> allAgents;

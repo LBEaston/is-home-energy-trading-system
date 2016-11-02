@@ -5,7 +5,7 @@ import agents.models.Proposal;
 import java.time.DayOfWeek;
 
 /**
- * Created by fegwin on 13/10/2016.
+ * Created by Aswin Lakshman on 13/10/2016.
  */
 public class HomeStatusContainer extends StatusContainerBase {
     public double currentNetConsumption;

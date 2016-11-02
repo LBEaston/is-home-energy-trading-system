@@ -3,7 +3,7 @@ package ui.containers;
 import java.time.DayOfWeek;
 
 /**
- * Created by fegwin on 13/10/2016.
+ * Created by Aswin Lakshman on 13/10/2016.
  */
 public class ApplianceStatusContainer extends StatusContainerBase {
     public double consuming;

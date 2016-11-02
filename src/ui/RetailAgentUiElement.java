@@ -9,10 +9,9 @@ import ui.containers.StatusContainerBase;
 import javax.swing.*;
 
 /**
- * Created by fegwin on 27/09/2016.
+ * Created by Aswin Lakshman on 27/09/2016.
  */
 public class RetailAgentUiElement extends AbstractAgentUiElement {
-	private static final long serialVersionUID = 1L;
     private JLabel currentProposal;
 
     public RetailAgentUiElement(AgentController agentController) throws StaleProxyException {

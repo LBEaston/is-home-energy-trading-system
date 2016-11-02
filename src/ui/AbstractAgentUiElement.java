@@ -10,10 +10,9 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
- * Created by fegwin on 27/09/2016.
+ * Created by Aswin Lakshman on 27/09/2016.
  */
 public abstract class AbstractAgentUiElement extends JPanel implements Informable {
-	private static final long serialVersionUID = 1L;
 	protected AgentController agentController;
     protected boolean showDateAndTime;
     protected boolean showAgentName;

@@ -6,7 +6,7 @@ import java.time.DayOfWeek;
 import java.util.Vector;
 
 /**
- * Created by fegwin on 13/10/2016.
+ * Created by Aswin Lakshman on 13/10/2016.
  */
 public class RetailerStatusContainer extends StatusContainerBase {
     public Vector<Proposal> currentProposals;
