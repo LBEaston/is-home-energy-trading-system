@@ -1,6 +1,7 @@
 import agents.*;
 import agents.models.ApplianceProfile;
 import agents.models.DayUsageProfile;
+import agents.models.RetailerDescriptor;
 import agents.models.SampleUsagePoint;
 import jade.core.Runtime;
 import jade.core.Profile;
@@ -92,39 +93,36 @@ public class Main {
     }
 
     private static void createAndAddRetailers(AgentContainer agentContainer, Vector<AgentController> agents) throws StaleProxyException {
-        RetailerAgent.RetailerDescriptor AGL = new RetailerAgent.RetailerDescriptor();
+        RetailerDescriptor AGL = new RetailerDescriptor();
         AGL.isOffPeak = true;
-        AGL.offPeakTickCount = 8;
-        AGL.peakTickCount = 16;
-        AGL.peakSellPrice = .123;
-        AGL.offPeakSellPrice = .434;
-        AGL.peakBuyPrice = .78;
-        AGL.offPeakBuyPrice = .234;
-        AGL.currentPeakOffPeakTickCount = 0;
+        AGL.peakTickCount = 12;
+        AGL.peakSellPrice = .436;
+        AGL.offPeakSellPrice = .324;
+        AGL.peakBuyPrice = .235;
+        AGL.offPeakBuyPrice = .78;
+        AGL.currentPeriodTickCount = 0;
 
-        RetailerAgent.RetailerDescriptor CityPower = new RetailerAgent.RetailerDescriptor();
-        CityPower.isOffPeak = true;
-        CityPower.offPeakTickCount = 8;
-        CityPower.peakTickCount = 16;
-        CityPower.peakSellPrice = .123;
-        CityPower.offPeakSellPrice = .434;
-        CityPower.peakBuyPrice = .78;
-        CityPower.offPeakBuyPrice = .234;
-        CityPower.currentPeakOffPeakTickCount = 0;
+        RetailerDescriptor CityPower = new RetailerDescriptor();
+        CityPower.isOffPeak = false;
+        CityPower.peakTickCount = 17;
+        CityPower.peakSellPrice = .532;
+        CityPower.offPeakSellPrice = .134;
+        CityPower.peakBuyPrice = .43;
+        CityPower.offPeakBuyPrice = .56;
+        CityPower.currentPeriodTickCount = 0;
 
-        RetailerAgent.RetailerDescriptor HomeBrand = new RetailerAgent.RetailerDescriptor();
-        HomeBrand.isOffPeak = true;
-        HomeBrand.offPeakTickCount = 8;
+        RetailerDescriptor HomeBrand = new RetailerDescriptor();
+        HomeBrand.isOffPeak = false;
         HomeBrand.peakTickCount = 16;
-        HomeBrand.peakSellPrice = .123;
-        HomeBrand.offPeakSellPrice = .434;
-        HomeBrand.peakBuyPrice = .78;
-        HomeBrand.offPeakBuyPrice = .234;
-        HomeBrand.currentPeakOffPeakTickCount = 0;
+        HomeBrand.peakSellPrice = .564;
+        HomeBrand.offPeakSellPrice = .234;
+        HomeBrand.peakBuyPrice = .16;
+        HomeBrand.offPeakBuyPrice = .57;
+        HomeBrand.currentPeriodTickCount = 0;
 
         agents.add(agentContainer.createNewAgent("AGL", RetailerAgent.class.getName(), new Object[] {AGL}));
         agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new Object[] {CityPower}));
-        agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {CityPower}));
+        agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {HomeBrand}));
     }
 
     private static SampleUsagePoint[] makeUsageSinWave(int startTime, int endTime, double peak) {

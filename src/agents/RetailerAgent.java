@@ -1,6 +1,7 @@
 package agents;
 
 import agents.models.Proposal;
+import agents.models.RetailerDescriptor;
 import jade.core.behaviours.Behaviour;
 import jade.domain.FIPAAgentManagement.FailureException;
 import jade.domain.FIPAAgentManagement.NotUnderstoodException;
@@ -19,31 +20,9 @@ import java.util.Vector;
  * Created by Aswin Lakshman on 7/09/2016.
  */
 public class RetailerAgent extends AbstractAgent {
-	/* https://www.originenergy.com.au/terms-and-conditions/qld-electricity-tariffs.html
-	 * Offpeak is on weekends and between 10pm�7am on weekdays
-	 * Shoulder time between 7am�4pm, 8pm�10pm
-	 * 
-	 * Price per kwh averages around ~25-35cents in Australia, (17-20 off peak): https://www.ovoenergy.com/guides/energy-guides/average-electricity-prices-kwh.html
-	 * http://cmeaustralia.com.au/wp-content/uploads/2013/09/FINAL-INTERNATIONAL-PRICE-COMPARISON-FOR-PUBLIC-RELEASE-29-MARCH-2012.pdf
-	 */
-	
-	public static class RetailerDescriptor
-	{
-		public boolean isOffPeak;
-
-		public int offPeakTickCount;
-		public int peakTickCount;
-
-        public double peakSellPrice;
-        public double offPeakSellPrice;
-        public double peakBuyPrice;
-        public double offPeakBuyPrice;
-
-		public int currentPeakOffPeakTickCount = 0;
-    }
-	
 	private RetailerDescriptor descriptor;
-	
+	private Vector<Proposal> currentProposalStrategies;
+
     @Override
     public EnergyAgentType getAgentType() {
         return EnergyAgentType.RetailerAgent;
@@ -58,6 +37,9 @@ public class RetailerAgent extends AbstractAgent {
         if(args.length < 1) throw new InvalidParameterException("Have not provided starting consumption value");
 
         descriptor = (RetailerDescriptor)args[0];
+
+        currentProposalStrategies = new Vector<>();
+        evaluatePeakOffPeakPeriod();
     }
 
     // Control Logic
@@ -65,8 +47,7 @@ public class RetailerAgent extends AbstractAgent {
     public void appTickElapsed() {
         evaluatePeakOffPeakPeriod();
 
-        Vector<Proposal> currentProposals = getProposalStrategies();
-        fireStatusChangedEvent(new RetailerStatusContainer(hourOfDay, dayOfWeek, currentProposals));
+        fireStatusChangedEvent(new RetailerStatusContainer(hourOfDay, dayOfWeek, currentProposalStrategies));
     }
 
     public void configureBehaviours() {
@@ -80,7 +61,6 @@ public class RetailerAgent extends AbstractAgent {
                 MessageTemplate.MatchPerformative(ACLMessage.CFP) );
 
         return new ContractNetResponder(this, template) {
-			private static final long serialVersionUID = 1L;
 			@Override
             protected ACLMessage handleCfp(ACLMessage cfp) throws NotUnderstoodException, RefuseException {
                 ACLMessage propose = cfp.createReply();
@@ -114,57 +94,68 @@ public class RetailerAgent extends AbstractAgent {
     // Proposal Strategies
     public String getCurrentRatesMessage() {
         String proposalMessage = "";
-        for(Proposal p : getProposalStrategies()) {
+
+        if(currentProposalStrategies.size() == 0) currentProposalStrategies = getProposalStrategies();
+
+        for(Proposal p : currentProposalStrategies) {
             proposalMessage += p.toString() + '|';
         }
 
         return proposalMessage.substring(0, proposalMessage.length() - 1);
     }
-    
+
+    private void evaluatePeakOffPeakPeriod() {
+        int ticksThatShouldHaveElapsed;
+
+        descriptor.currentPeriodTickCount++;
+
+        if(descriptor.isOffPeak) {
+            ticksThatShouldHaveElapsed = 24 - descriptor.peakTickCount;
+        } else {
+            ticksThatShouldHaveElapsed = descriptor.peakTickCount;
+        }
+
+        if(descriptor.currentPeriodTickCount >= ticksThatShouldHaveElapsed) {
+        	descriptor.isOffPeak = !descriptor.isOffPeak;
+        	descriptor.currentPeriodTickCount = 0;
+
+            // Period has changed, lets re-evaluate our strategies for a bit of randomness
+            currentProposalStrategies = getProposalStrategies();
+        }
+    }
+
+    // Proposal Generation Logic - Now done once per duration conclusion
+    // It was initially designed so that multiple proposals (for negotiation) can be generated
+    // however for simplicity, we are only going to use one
     private Random random = new Random();
     private double getRandXto1(double x)
     {
-    	return random.nextDouble()*(1.0-x) + x;
+        return random.nextDouble()*(1.0-x) + x;
     }
 
     private Vector<Proposal> getProposalStrategies() {
-        Vector<Proposal> proposalStrategies = new Vector<Proposal>();
+        Vector<Proposal> proposalStrategies = new Vector();
 
         // Simple proposal strategy
         // Any complex logic on variables rates/lock in periods should go here
         int appTicksRemainingInCurrentPeakOffPeakPeriod;
 
         if(descriptor.isOffPeak) {
-            appTicksRemainingInCurrentPeakOffPeakPeriod = descriptor.offPeakTickCount - descriptor.currentPeakOffPeakTickCount;
+            appTicksRemainingInCurrentPeakOffPeakPeriod = (24 - descriptor.peakTickCount) - descriptor.currentPeriodTickCount;
         } else {
-            appTicksRemainingInCurrentPeakOffPeakPeriod = descriptor.peakTickCount - descriptor.currentPeakOffPeakTickCount;
+            appTicksRemainingInCurrentPeakOffPeakPeriod = descriptor.peakTickCount - descriptor.currentPeriodTickCount;
         }
 
-        double sellPrice = descriptor.isOffPeak ? descriptor.offPeakSellPrice*getRandXto1(0.8) : descriptor.peakSellPrice*getRandXto1(0.8);
-        double buyPrice = descriptor.isOffPeak ? descriptor.offPeakBuyPrice*getRandXto1(0.8) : (descriptor.peakBuyPrice*getRandXto1(0.8));
+        double sellPrice = descriptor.isOffPeak
+                ? descriptor.offPeakSellPrice * getRandXto1(0.8)
+                : descriptor.peakSellPrice * getRandXto1(0.8);
+
+        double buyPrice = descriptor.isOffPeak
+                ? descriptor.offPeakBuyPrice * getRandXto1(0.8)
+                : (descriptor.peakBuyPrice * getRandXto1(0.8));
 
         proposalStrategies.add(new Proposal(this.getLocalName(), sellPrice, buyPrice, appTicksRemainingInCurrentPeakOffPeakPeriod));
 
         return proposalStrategies;
-    }
-    
-    private Proposal concedeProposal(Proposal p)
-    {
-		return p;
-    }
-
-    private void evaluatePeakOffPeakPeriod() {
-        int ticksThatShouldHaveElapsed;
-
-        if(descriptor.isOffPeak) {
-            ticksThatShouldHaveElapsed = descriptor.offPeakTickCount;
-        } else {
-            ticksThatShouldHaveElapsed = descriptor.peakTickCount;
-        }
-
-        if(descriptor.currentPeakOffPeakTickCount >= ticksThatShouldHaveElapsed) {
-        	descriptor.isOffPeak = !descriptor.isOffPeak;
-        	descriptor.currentPeakOffPeakTickCount = 0;
-        }
     }
 }

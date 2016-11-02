@@ -14,7 +14,7 @@ import java.util.Vector;
  * Created by Aswin Lakshman on 15/09/2016.
  */
 public abstract class AbstractAgent extends Agent implements Observable, Destroyable {
-	static int APP_TICK = 50;
+	static int APP_TICK = 200;
 
     private Vector<Informable> statusEventListeners;
 

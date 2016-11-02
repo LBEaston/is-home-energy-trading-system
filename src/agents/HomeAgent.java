@@ -32,7 +32,6 @@ public class HomeAgent extends AbstractAgent {
     private int ticksTillNextNegotiation = 0;
 
     private boolean inLoyalMode = true;
-    private boolean hasLoyalContract = false;
     private boolean inTheMiddleOfANegotiation = false;
 
     public HomeAgent() {
@@ -84,7 +83,7 @@ public class HomeAgent extends AbstractAgent {
     }
 
     private void negotiateWithRetailers() {
-        if(inTheMiddleOfANegotiation || hasLoyalContract) return;
+        if(inTheMiddleOfANegotiation) return;
 
         addBehaviour(getRetailerNegotiationBehaviour());
     }
@@ -103,7 +102,6 @@ public class HomeAgent extends AbstractAgent {
         inTheMiddleOfANegotiation = true;
 
         return new ContractNetInitiator(this, cfpMessage) {
-        	private static final long serialVersionUID = 1L;
             protected void handlePropose(ACLMessage propose, Vector v) { }
             protected void handleRefuse(ACLMessage refuse) { }
             protected void handleFailure(ACLMessage failure) { }
@@ -164,19 +162,12 @@ public class HomeAgent extends AbstractAgent {
             protected void handleInform(ACLMessage inform) {
                 currentEnergyContract = Proposal.fromString(inform.getContent());
                 ticksTillNextNegotiation = currentEnergyContract.duration;
-
-                if(inLoyalMode) {
-                    hasLoyalContract = true;
-                    // Stop trying to get another contract. This is it!
-                }
             }
         };
     }
     
     private Behaviour getReceiveHelloMessagesBehaviour() {
         return new CyclicBehaviour(this) {
-			private static final long serialVersionUID = 1L;
-
 			public void action() {
                 MessageTemplate template = MessageTemplate.and(
                         MessageTemplate.MatchContent("hello"),
@@ -195,7 +186,6 @@ public class HomeAgent extends AbstractAgent {
 
     private Behaviour getReceiveMessagesBehaviour(AID sender) {
         return new CyclicBehaviour(this) {
-        	private static final long serialVersionUID = 1L;
             public void action() {
                 MessageTemplate template = MessageTemplate.and(
                         MessageTemplate.MatchSender(sender),
@@ -215,7 +205,6 @@ public class HomeAgent extends AbstractAgent {
 
     private Behaviour getRecalculateAndUpdateBehaviour() {
         return new OneShotBehaviour() {
-        	private static final long serialVersionUID = 1L;
             @Override
             public void action() {
                 try {
@@ -374,7 +363,7 @@ public class HomeAgent extends AbstractAgent {
     private double getUtilityOfContract(Proposal c) {
     	if(inLoyalMode && currentEnergyContract != null) {
             // Always favour current contract
-            if(currentEnergyContract.retailer == c.retailer) {
+            if(currentEnergyContract.retailer.equals(c.retailer)) {
                 return 1000;
             } else {
                 return 0;
