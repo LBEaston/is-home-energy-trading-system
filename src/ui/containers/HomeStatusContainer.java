@@ -9,11 +9,13 @@ import java.time.DayOfWeek;
  */
 public class HomeStatusContainer extends StatusContainerBase {
     public double currentNetConsumption;
+    public double totalSpendToDate;
     public Proposal currentEnergyContract;
 
-    public HomeStatusContainer(double currentNetConsumption, int hourOfDay, DayOfWeek dayOfWeek, Proposal contract) {
+    public HomeStatusContainer(double currentNetConsumption, double totalSpendToDate, int hourOfDay, DayOfWeek dayOfWeek, Proposal contract) {
         super(hourOfDay, dayOfWeek);
 
+        this.totalSpendToDate = totalSpendToDate;
         this.currentNetConsumption = currentNetConsumption;
         this.currentEnergyContract = contract;
     }

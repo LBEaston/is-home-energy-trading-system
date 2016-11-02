@@ -33,6 +33,11 @@ public abstract class AbstractAgent extends Agent implements Observable, Destroy
         statusEventListeners.add(listener);
     }
 
+    @Override
+    public String getAgentGroup() {
+        return null;
+    }
+
     public void fireStatusChangedEvent(StatusContainerBase newStatus) {
         if(statusEventListeners == null || statusEventListeners.isEmpty()) return;
 

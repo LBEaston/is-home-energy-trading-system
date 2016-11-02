@@ -25,16 +25,11 @@ public class Main {
         pMain.setParameter(Profile.GUI, "true");
         ContainerController mainContainer = jadeRuntime.createMainContainer(pMain);
 
-        //2. Create a Sniffer
-        AgentController sniffer = mainContainer.createNewAgent("mySniffer", "jade.tools.sniffer.Sniffer",
-                new Object[]{"AGL;CityPower;HomeBrand;HomeAgent;SolarPanel;TV1;TV2;WashingMachine;Fridge"});
-        sniffer.start();
-
-        //3. Some agent container stuff
+        //2. Some agent container stuff
         Profile p = new ProfileImpl(false);
         AgentContainer agentContainer = jadeRuntime.createAgentContainer(p);
 
-        //4. Startup all the agents
+        //3. Create/Startup all the agents
             // 3 retailers
             // 1 homeagent
                 // 2 solar panel
@@ -43,64 +38,90 @@ public class Main {
                 // 1 fridge
         Vector<AgentController> agents = new Vector<>();
 
-        //{true, 8, 16, 123, 434, 78, 234}));
-        //agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 243}));
-        //agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {true, 8, 16, 123, 434, 78, 243}));
-        
-        RetailerAgent.RetailerDescriptor AGL = new RetailerAgent.RetailerDescriptor();
-        AGL.isOffPeak = true;
-        AGL.offPeakTickCount = 8;
-        AGL.peakTickCount = 16;
-		AGL.peakSellPrice = 123;
-		AGL.offPeakSellPrice = 434;
-		AGL.peakBuyPrice = 78;
-		AGL.offPeakBuyPrice = 234;
-		AGL.currentPeakOffPeakTickCount = 0;
-		
-        RetailerAgent.RetailerDescriptor CityPower = new RetailerAgent.RetailerDescriptor();
-        CityPower.isOffPeak = true;
-        CityPower.offPeakTickCount = 8;
-        CityPower.peakTickCount = 16;
-        CityPower.peakSellPrice = 123;
-        CityPower.offPeakSellPrice = 434;
-        CityPower.peakBuyPrice = 78;
-        CityPower.offPeakBuyPrice = 234;
-        CityPower.currentPeakOffPeakTickCount = 0;
-        
-        RetailerAgent.RetailerDescriptor HomeBrand = new RetailerAgent.RetailerDescriptor();
-        HomeBrand.isOffPeak = true;
-        HomeBrand.offPeakTickCount = 8;
-        HomeBrand.peakTickCount = 16;
-        HomeBrand.peakSellPrice = 123;
-        HomeBrand.offPeakSellPrice = 434;
-        HomeBrand.peakBuyPrice = 78;
-        HomeBrand.offPeakBuyPrice = 234;
-        HomeBrand.currentPeakOffPeakTickCount = 0;
-		
-        agents.add(agentContainer.createNewAgent("AGL", RetailerAgent.class.getName(), new Object[] {AGL}));
-        agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new Object[] {CityPower}));
-        agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {CityPower}));
+        // retailers
+        createAndAddRetailers(agentContainer, agents);
 
-        agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new Object[] {"HomeBrand", "AGL", "CityPower"}));
+        // smart home agent
+        createAndAddSmartHomeAgent(agentContainer, agents);
 
-        Vector<ApplianceProfile> applianceProfiles = getApplianceAgentProfiles();
-
-        for(ApplianceProfile ap : applianceProfiles) {
-            agents.add(agentContainer.createNewAgent(ap.applianceName, ApplianceAgent.class.getName(), new Object[] {"HomeAgent", ap}));
-        }
+        // dumb home agent
+        createAndAddDumbHomeAgent(agentContainer, agents);
 
         // Starting our agents
         for(AgentController agent : agents) {
             agent.start();
         }
 
-        //5. Fire up our user interface
+        //4. Fire up our user interface
         SmartHomeEnergyApplication smartHomeEnergyApplicationUi = new SmartHomeEnergyApplication(agents);
         SwingUtilities.invokeLater(smartHomeEnergyApplicationUi);
+
+        //5. Create a sniffer
+        String snifferConfigString = "";
+        for(AgentController ac : agents) {
+            snifferConfigString += ac.getName() + ";";
+        }
+
+        snifferConfigString = snifferConfigString.substring(0, snifferConfigString.length() - 1);
+
+        AgentController sniffer = mainContainer.createNewAgent("mySniffer", "jade.tools.sniffer.Sniffer",
+                new Object[]{snifferConfigString});
+        sniffer.start();
+
     }
 
-    public static SampleUsagePoint[] makeUsageSinWave(int startTime, int endTime, double peak)
-    {
+    private static void createAndAddDumbHomeAgent(AgentContainer agentContainer, Vector<AgentController> agents) throws StaleProxyException {
+
+    }
+
+    private static void createAndAddSmartHomeAgent(AgentContainer agentContainer, Vector<AgentController> agents) throws StaleProxyException {
+        agents.add(agentContainer.createNewAgent("HomeAgent", HomeAgent.class.getName(), new Object[] {"HomeBrand", "AGL", "CityPower"}));
+
+        // appliance agents
+        Vector<ApplianceProfile> applianceProfiles = getApplianceAgentProfiles();
+
+        for(ApplianceProfile ap : applianceProfiles) {
+            agents.add(agentContainer.createNewAgent(ap.applianceName, ApplianceAgent.class.getName(), new Object[] {"HomeAgent", ap}));
+        }
+    }
+
+    private static void createAndAddRetailers(AgentContainer agentContainer, Vector<AgentController> agents) throws StaleProxyException {
+        RetailerAgent.RetailerDescriptor AGL = new RetailerAgent.RetailerDescriptor();
+        AGL.isOffPeak = true;
+        AGL.offPeakTickCount = 8;
+        AGL.peakTickCount = 16;
+        AGL.peakSellPrice = .123;
+        AGL.offPeakSellPrice = .434;
+        AGL.peakBuyPrice = .78;
+        AGL.offPeakBuyPrice = .234;
+        AGL.currentPeakOffPeakTickCount = 0;
+
+        RetailerAgent.RetailerDescriptor CityPower = new RetailerAgent.RetailerDescriptor();
+        CityPower.isOffPeak = true;
+        CityPower.offPeakTickCount = 8;
+        CityPower.peakTickCount = 16;
+        CityPower.peakSellPrice = .123;
+        CityPower.offPeakSellPrice = .434;
+        CityPower.peakBuyPrice = .78;
+        CityPower.offPeakBuyPrice = .234;
+        CityPower.currentPeakOffPeakTickCount = 0;
+
+        RetailerAgent.RetailerDescriptor HomeBrand = new RetailerAgent.RetailerDescriptor();
+        HomeBrand.isOffPeak = true;
+        HomeBrand.offPeakTickCount = 8;
+        HomeBrand.peakTickCount = 16;
+        HomeBrand.peakSellPrice = .123;
+        HomeBrand.offPeakSellPrice = .434;
+        HomeBrand.peakBuyPrice = .78;
+        HomeBrand.offPeakBuyPrice = .234;
+        HomeBrand.currentPeakOffPeakTickCount = 0;
+
+        agents.add(agentContainer.createNewAgent("AGL", RetailerAgent.class.getName(), new Object[] {AGL}));
+        agents.add(agentContainer.createNewAgent("CityPower", RetailerAgent.class.getName(), new Object[] {CityPower}));
+        agents.add(agentContainer.createNewAgent("HomeBrand", RetailerAgent.class.getName(), new Object[] {CityPower}));
+    }
+
+    public static SampleUsagePoint[] makeUsageSinWave(int startTime, int endTime, double peak) {
 	    double period = (endTime - startTime);
 	    SampleUsagePoint[] result = new SampleUsagePoint[endTime-startTime+1];
 	    for(int i = startTime; i <= endTime; ++i)

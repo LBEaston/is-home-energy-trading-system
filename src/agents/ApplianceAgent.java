@@ -23,6 +23,11 @@ public class ApplianceAgent extends AbstractAgent {
     }
 
     @Override
+    public String getAgentGroup() {
+        return homeAgentName;
+    }
+
+    @Override
     protected void setup() {
         super.setup();
 
@@ -109,4 +114,5 @@ public class ApplianceAgent extends AbstractAgent {
         // New listener added, do an inform
         addBehaviour(getInformBehaviour());
     }
+
 }

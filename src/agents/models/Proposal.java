@@ -11,7 +11,7 @@ public class Proposal {
     public double retailerBuyingPrice;
     public int duration;
 
-    public Proposal(String retailer, float sellingPrice, float buyingPrice, int duration) {
+    public Proposal(String retailer, double sellingPrice, double buyingPrice, int duration) {
         this.retailer = retailer;
 
         this.retailerSellingPrice = sellingPrice;

@@ -23,8 +23,8 @@ public class RetailerAgent extends AbstractAgent {
 
 	
 	/* https://www.originenergy.com.au/terms-and-conditions/qld-electricity-tariffs.html
-	 * Offpeak is on weekends and between 10pm–7am on weekdays
-	 * Shoulder time between 7am–4pm, 8pm–10pm
+	 * Offpeak is on weekends and between 10pmï¿½7am on weekdays
+	 * Shoulder time between 7amï¿½4pm, 8pmï¿½10pm
 	 * 
 	 * Price per kwh averages around ~25-35cents in Australia, (17-20 off peak): https://www.ovoenergy.com/guides/energy-guides/average-electricity-prices-kwh.html
 	 * http://cmeaustralia.com.au/wp-content/uploads/2013/09/FINAL-INTERNATIONAL-PRICE-COMPARISON-FOR-PUBLIC-RELEASE-29-MARCH-2012.pdf
@@ -37,13 +37,13 @@ public class RetailerAgent extends AbstractAgent {
 		public int offPeakTickCount;
 		public int peakTickCount;
 
-		public int peakSellPrice;
-		public int offPeakSellPrice;
-		public int peakBuyPrice;
-		public int offPeakBuyPrice;
+        public double peakSellPrice;
+        public double offPeakSellPrice;
+        public double peakBuyPrice;
+        public double offPeakBuyPrice;
 
 		public int currentPeakOffPeakTickCount = 0;
-	}
+    }
 	
 	private RetailerDescriptor descriptor;
 	
@@ -143,10 +143,10 @@ public class RetailerAgent extends AbstractAgent {
             appTicksRemainingInCurrentPeakOffPeakPeriod = descriptor.peakTickCount - descriptor.currentPeakOffPeakTickCount;
         }
 
-        proposalStrategies.add(new Proposal(this.getLocalName(),
-        				descriptor.isOffPeak ? (int)(descriptor.offPeakSellPrice*getRandXto1(0.8)) : (int)(descriptor.peakSellPrice*getRandXto1(0.8)),
-        				descriptor.isOffPeak ? (int)(descriptor.offPeakBuyPrice*getRandXto1(0.8)) : (int)(descriptor.peakBuyPrice*getRandXto1(0.8)),
-                (int)(appTicksRemainingInCurrentPeakOffPeakPeriod*getRandXto1(0.8))));
+        double sellPrice = descriptor.isOffPeak ? descriptor.offPeakSellPrice*getRandXto1(0.8) : descriptor.peakSellPrice*getRandXto1(0.8);
+        double buyPrice = descriptor.isOffPeak ? descriptor.offPeakBuyPrice*getRandXto1(0.8) : (descriptor.peakBuyPrice*getRandXto1(0.8));
+
+        proposalStrategies.add(new Proposal(this.getLocalName(), sellPrice, buyPrice, appTicksRemainingInCurrentPeakOffPeakPeriod));
 
         return proposalStrategies;
     }

@@ -5,7 +5,7 @@ import jade.wrapper.StaleProxyException;
 import ui.containers.HomeStatusContainer;
 import ui.containers.StatusContainerBase;
 
-import java.awt.Dimension;
+import java.awt.*;
 
 import javax.swing.*;
 
@@ -15,33 +15,27 @@ import javax.swing.*;
 public class HomeAgentUiElement extends AbstractAgentUiElement {
 	private static final long serialVersionUID = 1L;
     private JLabel currentNetConsumption;
-    private JLabel previousNetConsumption;
+    private JLabel totalSpendToDate;
     private JLabel currentContractDetails;
-    
+
     private GraphPanel graph;
     private double[] graphScores = new double[24*7];
     
     public HomeAgentUiElement(AgentController agentController) throws StaleProxyException {
-        super(agentController, true);
+        super(agentController, true, false);
 
         currentNetConsumption = new JLabel();
-        previousNetConsumption = new JLabel();
+        totalSpendToDate = new JLabel();
         currentContractDetails = new JLabel();
 
-
-        this.add(currentNetConsumption);
-        this.add(previousNetConsumption);
-        this.add(currentContractDetails);
+        this.add(currentNetConsumption, getGridBagConstraints());
+        this.add(totalSpendToDate, getGridBagConstraints());
+        this.add(currentContractDetails, getGridBagConstraints());
 
         graph = new GraphPanel(graphScores);
-        graph.setPreferredSize(new Dimension(1000, 200));
-        
-        JFrame homeUsageFrame = new JFrame("HomeUsage Graph");
-        homeUsageFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        homeUsageFrame.getContentPane().add(graph);
-        homeUsageFrame.pack();
-        homeUsageFrame.setLocationRelativeTo(null);
-        homeUsageFrame.setVisible(true);
+        this.add(graph, getGraphGridBagConstraints());
+
+        this.setPreferredSize(new Dimension(1000, 750));
     }
     
     private int timeToGraph(HomeStatusContainer status)
@@ -54,9 +48,8 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         super.inform(currentStatus);
         HomeStatusContainer status = (HomeStatusContainer)currentStatus;
 
-        String previous = currentNetConsumption.getText();
         currentNetConsumption.setText("Current net: " + status.currentNetConsumption + " kwH");
-        previousNetConsumption.setText(previous.replace("Current", "Previous"));
+        totalSpendToDate.setText("Total spend: " + status.totalSpendToDate);
 
         int graphIndex = timeToGraph(status);
         if(status.currentEnergyContract != null) {
@@ -67,12 +60,22 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
                     status.currentEnergyContract.duration));
             currentContractDetails.validate();
 
-            graph.setStartEndTimes(graphIndex, 
-            		graphIndex + status.currentEnergyContract.duration);
+            graph.setStartEndTimes(graphIndex, graphIndex + status.currentEnergyContract.duration);
         }
 
         graphScores[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.currentNetConsumption);
         graph.setScores(graphScores);
         graph.setCurrentTime(graphIndex);
+    }
+
+    private GridBagConstraints getGraphGridBagConstraints() {
+        GridBagConstraints cons = new GridBagConstraints();
+
+        cons.fill = GridBagConstraints.BOTH;
+        cons.weightx = 1;
+        cons.weighty = 1;
+        cons.gridx = 0;
+
+        return cons;
     }
 }

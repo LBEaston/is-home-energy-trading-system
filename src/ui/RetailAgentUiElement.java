@@ -16,10 +16,10 @@ public class RetailAgentUiElement extends AbstractAgentUiElement {
     private JLabel currentProposal;
 
     public RetailAgentUiElement(AgentController agentController) throws StaleProxyException {
-        super(agentController, false);
+        super(agentController, false, true);
 
         currentProposal = new JLabel();
-        this.add(currentProposal);
+        this.add(currentProposal, getGridBagConstraints());
     }
 
     @Override

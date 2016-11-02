@@ -9,4 +9,5 @@ import ui.interfaces.Informable;
 public interface Observable {
     void addStatusEventListener(Informable listener);
     EnergyAgentType getAgentType();
+    String getAgentGroup();
 }
