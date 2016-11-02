@@ -16,6 +16,8 @@ public class ApplianceAgentUiElement extends AbstractAgentUiElement {
 
     public ApplianceAgentUiElement(AgentController agentController) throws StaleProxyException {
         super(agentController, false, true);
+
+        this.setLayout(new FlowLayout());
     }
 
     @Override
@@ -25,7 +27,7 @@ public class ApplianceAgentUiElement extends AbstractAgentUiElement {
         // Add the consuming
         currentlyConsuming = new JLabel();
 
-        this.add(currentlyConsuming, getGridBagConstraints());
+        this.add(currentlyConsuming);
     }
 
     @Override
@@ -41,6 +43,6 @@ public class ApplianceAgentUiElement extends AbstractAgentUiElement {
             this.setBackground(Color.white);
         }
 
-        currentlyConsuming.setText(currentConsumptionLevel + "kwH");
+        currentlyConsuming.setText(String.format("%.2fkwH", currentConsumptionLevel));
     }
 }

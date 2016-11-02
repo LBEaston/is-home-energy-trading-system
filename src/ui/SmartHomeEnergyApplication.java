@@ -65,7 +65,7 @@ public class SmartHomeEnergyApplication implements Runnable {
 
     private void createHomeAgentUi(AgentController agentController, Vector<AgentController> applianceAgents) throws StaleProxyException, UnableToGetAgentInterfaceException {
         JPanel appliancePanel = new JPanel();
-        appliancePanel.setLayout(new GridBagLayout());
+        appliancePanel.setLayout(new GridLayout(0, 2));
 
         Observable homeAgent = agentController.getO2AInterface(Observable.class);
 

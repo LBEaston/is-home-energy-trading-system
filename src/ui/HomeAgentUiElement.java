@@ -6,7 +6,6 @@ import ui.containers.HomeStatusContainer;
 import ui.containers.StatusContainerBase;
 
 import java.awt.*;
-
 import javax.swing.*;
 
 /**
@@ -17,8 +16,8 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
     private JLabel totalSpendToDate;
     private JLabel currentContractDetails;
 
-    private GraphPanel graph;
-    private double[] graphScores = new double[24*7];
+    private GraphPanel usageGraph;
+    private double[] usageGraphScores = new double[24*7];
     
     public HomeAgentUiElement(AgentController agentController) throws StaleProxyException {
         super(agentController, true, false);
@@ -31,14 +30,13 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         this.add(totalSpendToDate, getGridBagConstraints());
         this.add(currentContractDetails, getGridBagConstraints());
 
-        graph = new GraphPanel(graphScores);
-        this.add(graph, getGraphGridBagConstraints());
+        usageGraph = new GraphPanel(usageGraphScores);
+        this.add(usageGraph, getGraphGridBagConstraints());
 
         this.setPreferredSize(new Dimension(1000, 750));
     }
     
-    private int timeToGraph(HomeStatusContainer status)
-    {
+    private int timeToGraph(HomeStatusContainer status) {
     	return (status.dayOfWeek.getValue()-1) *24 + status.hourOfDay;
     }
 
@@ -47,7 +45,7 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         super.inform(currentStatus);
         HomeStatusContainer status = (HomeStatusContainer)currentStatus;
 
-        currentNetConsumption.setText(String.format("Current net: $%.2fkwH", status.currentNetConsumption));
+        currentNetConsumption.setText(String.format("Current net: %.2fkwH", status.currentNetConsumption));
         totalSpendToDate.setText(String.format("Total spend: $%.2f", status.totalSpendToDate));
 
         int graphIndex = timeToGraph(status);
@@ -59,12 +57,12 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
                     status.currentEnergyContract.duration));
             currentContractDetails.validate();
 
-            graph.setStartEndTimes(graphIndex, graphIndex + status.currentEnergyContract.duration);
+            usageGraph.setStartEndTimes(graphIndex, graphIndex + status.currentEnergyContract.duration);
         }
 
-        graphScores[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.currentNetConsumption);
-        graph.setScores(graphScores);
-        graph.setCurrentTime(graphIndex);
+        usageGraphScores[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.currentNetConsumption);
+        usageGraph.setScores(usageGraphScores);
+        usageGraph.setCurrentTime(graphIndex);
     }
 
     private GridBagConstraints getGraphGridBagConstraints() {

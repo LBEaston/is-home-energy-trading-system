@@ -12,13 +12,20 @@ import javax.swing.*;
  * Created by Aswin Lakshman on 27/09/2016.
  */
 public class RetailAgentUiElement extends AbstractAgentUiElement {
-    private JLabel currentProposal;
+    private JLabel currentlyBuyingAt;
+    private JLabel currentlySellingAt;
+    private JLabel duration;
 
     public RetailAgentUiElement(AgentController agentController) throws StaleProxyException {
         super(agentController, false, true);
 
-        currentProposal = new JLabel();
-        this.add(currentProposal, getGridBagConstraints());
+        currentlyBuyingAt = new JLabel();
+        currentlySellingAt = new JLabel();
+        duration = new JLabel();
+
+        this.add(currentlyBuyingAt, getGridBagConstraints());
+        this.add(currentlySellingAt, getGridBagConstraints());
+        this.add(duration, getGridBagConstraints());
     }
 
     @Override
@@ -26,12 +33,11 @@ public class RetailAgentUiElement extends AbstractAgentUiElement {
         super.inform(currentStatus);
         RetailerStatusContainer status = (RetailerStatusContainer)currentStatus;
 
-        String proposalString = "";
+        // We haven't implemented a multi proposal system, so render the first proposal only..
+        Proposal p = status.currentProposals.firstElement();
 
-        for(Proposal p : status.currentProposals) {
-            proposalString += String.format("<%s>", p.toReadableString());
-        }
-
-        currentProposal.setText(proposalString);
+        currentlyBuyingAt.setText(String.format("Buying @ $%.2f", p.retailerBuyingPrice));
+        currentlySellingAt.setText(String.format("Selling @ $%.2f", p.retailerSellingPrice));
+        duration.setText(String.format("Duration %s hours", p.duration));
     }
 }
