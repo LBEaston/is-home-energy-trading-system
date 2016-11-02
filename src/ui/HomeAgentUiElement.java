@@ -17,8 +17,10 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
     private JLabel currentContractDetails;
 
     private GraphPanel usageGraph;
+    private GraphPanel predictionGraph;
     private double[] usageGraphScores = new double[24*7];
-    
+    private double[] predictionGraphScores = new double[24*7];
+
     public HomeAgentUiElement(AgentController agentController) throws StaleProxyException {
         super(agentController, true, false);
 
@@ -32,6 +34,9 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
 
         usageGraph = new GraphPanel(usageGraphScores);
         this.add(usageGraph, getGraphGridBagConstraints());
+
+        predictionGraph = new GraphPanel(predictionGraphScores);
+        this.add(predictionGraph, getGraphGridBagConstraints());
 
         this.setPreferredSize(new Dimension(1000, 750));
     }
@@ -63,6 +68,12 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
         usageGraphScores[(status.dayOfWeek.getValue()-1) *24 + status.hourOfDay] = ((double)status.currentNetConsumption);
         usageGraph.setScores(usageGraphScores);
         usageGraph.setCurrentTime(graphIndex);
+
+        for(int i = 0; i < status.graphScoresPrediction.length; i++) {
+            predictionGraphScores[i] = status.graphScoresPrediction[i];
+        }
+
+        predictionGraph.setScores(predictionGraphScores);
     }
 
     private GridBagConstraints getGraphGridBagConstraints() {

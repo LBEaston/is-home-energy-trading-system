@@ -71,7 +71,13 @@ public abstract class AbstractAgentUiElement extends JPanel implements Informabl
     @Override
     public void inform(StatusContainerBase currentStatus) {
         if(showDateAndTime) {
-            currentDayOfWeek.setText("Day of week: " + currentStatus.dayOfWeek.toString());
+            String weeksText = "Day of week: " + currentStatus.dayOfWeek.toString();
+
+            if(currentStatus.weeksElapsed > 0) {
+                weeksText += " (" + currentStatus.weeksElapsed + " weeks elapsed)";
+            }
+
+            currentDayOfWeek.setText(weeksText);
             currentHourOfDay.setText("Hour of day: " + currentStatus.hourOfDay);
         }
     }

@@ -14,11 +14,12 @@ import java.util.Vector;
  * Created by Aswin Lakshman on 15/09/2016.
  */
 public abstract class AbstractAgent extends Agent implements Observable, Destroyable {
-	static int APP_TICK = 1000;
+	static int APP_TICK = 50;
 
     private Vector<Informable> statusEventListeners;
 
     // Timekeeping
+    protected int weeksElapsed = 0;
     protected DayOfWeek dayOfWeek = DayOfWeek.MONDAY;
     protected int hourOfDay = 0;
     protected int appTicksElapsed = 0;
@@ -87,6 +88,8 @@ public abstract class AbstractAgent extends Agent implements Observable, Destroy
         if(hourOfDay > 23 ) {
             hourOfDay = 0;
             dayOfWeek = incrementDayOfWeek(dayOfWeek);
+
+            if(dayOfWeek == DayOfWeek.MONDAY) weeksElapsed++;
         }
     }
 

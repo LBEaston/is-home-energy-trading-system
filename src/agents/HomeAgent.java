@@ -51,8 +51,7 @@ public class HomeAgent extends AbstractAgent {
         return getLocalName();
     }
 
-//    private GraphPanel graphPrediction;
-//    private double[] graphScoresPrediction = new double[24*7];
+    private double[] graphScoresPrediction = new double[24*7];
     protected void setup() {
         super.setup();
 
@@ -65,15 +64,6 @@ public class HomeAgent extends AbstractAgent {
         }
 
         this.inLoyalMode = (boolean)getArguments()[1];
-
-//        graphPrediction = new GraphPanel(graphScoresPrediction);
-//        graphPrediction.setPreferredSize(new Dimension(1000, 200));
-//        JFrame predictionFrame = new JFrame("Prediction Graph");
-//        predictionFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        predictionFrame.getContentPane().add(graphPrediction);
-//        predictionFrame.pack();
-//        predictionFrame.setLocationRelativeTo(null);
-//        predictionFrame.setVisible(true);
     }
 
     /** Behaviours and Control Logic **/
@@ -91,8 +81,6 @@ public class HomeAgent extends AbstractAgent {
 
         ticksTillNextNegotiation--;
         addBehaviour(getRecalculateAndUpdateBehaviour());
-
-        //graphPrediction.setScores(graphScoresPrediction);
     }
 
     private void negotiateWithRetailers() {
@@ -236,7 +224,9 @@ public class HomeAgent extends AbstractAgent {
                     updateTotalSpend();
                     updateApplianceConsumptionHistory();
 
-                    fireStatusChangedEvent(new HomeStatusContainer(getCurrentNetConsumption(), totalSpendToDate, hourOfDay, dayOfWeek, currentEnergyContract));
+                    fireStatusChangedEvent(new HomeStatusContainer(getCurrentNetConsumption(), totalSpendToDate,
+                            hourOfDay, dayOfWeek, weeksElapsed,
+                            currentEnergyContract, graphScoresPrediction));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -277,7 +267,7 @@ public class HomeAgent extends AbstractAgent {
         for(InstantDescriptor instantDescriptor : instancesForTheNextNHoursWorthOfPredictions) {
             double historicalAverageForThisHourDay = getHistoricalConsumptionTotalByInstantDescriptor(instantDescriptor);
             predictedConsumptionsForTheNextNHours.add(historicalAverageForThisHourDay);
-            //graphScoresPrediction[(instantDescriptor.dayOfWeek.getValue()-1) *24 + instantDescriptor.hourOfDay] = (historicalAverageForThisHourDay);
+            graphScoresPrediction[(instantDescriptor.dayOfWeek.getValue()-1) *24 + instantDescriptor.hourOfDay] = (historicalAverageForThisHourDay);
         }
 
         double sum = 0;
@@ -289,7 +279,7 @@ public class HomeAgent extends AbstractAgent {
     }
 
     private double getHistoricalConsumptionTotalByInstantDescriptor(InstantDescriptor instantDescriptor) {
-        Vector<Double> dataPoints = new Vector<Double>();
+        Vector<Double> dataPoints = new Vector();
 
         Iterator<Map.Entry<String, ApplianceConsumptionHistory>> it = applianceConsumptionHistory.entrySet().iterator();
         while(it.hasNext()) {
