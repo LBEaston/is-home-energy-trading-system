@@ -38,7 +38,7 @@ public class RetailerAgent extends AbstractAgent {
 
         descriptor = (RetailerDescriptor)args[0];
 
-        currentProposalStrategies = new Vector<>();
+        currentProposalStrategies = getProposalStrategies();
         evaluatePeakOffPeakPeriod();
     }
 
