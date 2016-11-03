@@ -100,6 +100,7 @@ public class SmartHomeEnergyApplication implements Runnable {
         homeAgentCons.fill = GridBagConstraints.BOTH;
         homeAgentCons.weighty = 1;
 
+        homeAgentWindow.setMinimumSize(new Dimension(650, 750));
         homeAgentWindow.add(homeAgentUiElement, homeAgentCons);
         homeAgentWindow.add(appliancePanel, AbstractAgentUiElement.getGridBagConstraints());
         homeAgentWindow.pack();
@@ -123,6 +124,7 @@ public class SmartHomeEnergyApplication implements Runnable {
 
         retailerPanel.setMinimumSize(new Dimension(400, 300));
         retailerPanel.pack();
+        retailerPanel.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         retailerPanel.setVisible(true);
     }
 

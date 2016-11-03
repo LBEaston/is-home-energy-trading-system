@@ -37,8 +37,6 @@ public class HomeAgentUiElement extends AbstractAgentUiElement {
 
         predictionGraph = new GraphPanel(predictionGraphScores);
         this.add(predictionGraph, getGraphGridBagConstraints());
-
-        this.setPreferredSize(new Dimension(1000, 750));
     }
     
     private int timeToGraph(HomeStatusContainer status) {
